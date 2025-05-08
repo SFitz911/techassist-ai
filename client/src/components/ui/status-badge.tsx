@@ -33,6 +33,7 @@ export function StatusBadge({
   onStatusChange
 }: StatusBadgeProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
   const getStatusDetails = (status: string) => {
@@ -103,6 +104,9 @@ export function StatusBadge({
       if (onStatusChange) {
         onStatusChange(newStatus);
       }
+      
+      // Close the popover
+      setOpen(false);
     } catch (error) {
       toast({
         title: 'Error',
@@ -127,7 +131,7 @@ export function StatusBadge({
   ];
   
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <div 
           className={`cursor-pointer inline-flex items-center rounded-full ${sizeClasses[size]} font-medium border transition-colors ${statusDetails.className} ${className}`}
