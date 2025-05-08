@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { MapPin, ExternalLink } from 'lucide-react';
 
 // Use environment variable for the Mapbox token
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "";
+const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+mapboxgl.accessToken = mapboxToken || "";
 
 interface StoreLocationMapProps {
   storeName: string;
@@ -20,30 +22,43 @@ export default function StoreLocationMap({
 }: StoreLocationMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const [mapError, setMapError] = useState<boolean>(false);
 
   useEffect(() => {
     if (!mapContainer.current) return;
     
-    // Initialize map
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      center: [longitude, latitude],
-      zoom: 14,
-      interactive: true,
-    });
-
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Check if token is available
+    if (!mapboxToken) {
+      console.error("Mapbox token is not available");
+      setMapError(true);
+      return;
+    }
     
-    // Add marker for the store
-    const marker = new mapboxgl.Marker({ color: '#F59E0B' })
-      .setLngLat([longitude, latitude])
-      .setPopup(new mapboxgl.Popup().setHTML(`<strong>${storeName}</strong>`))
-      .addTo(map.current);
+    try {
+      // Initialize map
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/dark-v11',
+        center: [longitude, latitude],
+        zoom: 14,
+        interactive: true,
+      });
+
+      // Add navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
       
-    // Open popup by default
-    marker.togglePopup();
+      // Add marker for the store
+      const marker = new mapboxgl.Marker({ color: '#F59E0B' })
+        .setLngLat([longitude, latitude])
+        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${storeName}</strong>`))
+        .addTo(map.current);
+        
+      // Open popup by default
+      marker.togglePopup();
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      setMapError(true);
+    }
     
     // Clean up on unmount
     return () => {
@@ -52,7 +67,25 @@ export default function StoreLocationMap({
         map.current = null;
       }
     };
-  }, [storeName, latitude, longitude]);
+  }, [storeName, latitude, longitude, mapboxToken]);
+
+  if (mapError) {
+    return (
+      <div className={`${className} flex flex-col items-center justify-center bg-muted border border-border`}>
+        <MapPin className="h-8 w-8 mb-2 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Map not available</p>
+        <a 
+          href={`https://maps.google.com/?q=${latitude},${longitude}`}
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center justify-center mt-2 bg-primary text-white text-xs font-medium px-2 py-1 rounded-md shadow-sm hover:bg-primary/90 transition-colors"
+        >
+          <ExternalLink className="h-3 w-3 mr-1" />
+          View on Google Maps
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>
