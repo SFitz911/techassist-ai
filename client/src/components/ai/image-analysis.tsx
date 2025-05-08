@@ -21,7 +21,9 @@ export default function ImageAnalysis({ photo }: { photo: Photo }) {
   
   // AI analysis mutation - using direct API endpoint instead of the openai.ts helper
   const analysisMutation = useMutation({
-    mutationFn: () => apiRequest(`/api/photos/${photo.id}/analyze`, { method: 'POST' }),
+    mutationFn: async () => {
+      return apiRequest(`/api/photos/${photo.id}/analyze`, { method: 'POST' });
+    },
     onSuccess: (data) => {
       toast({
         title: "Analysis complete",
