@@ -104,7 +104,7 @@ export default function Dashboard() {
   // Handle loading state
   if (isLoadingJobs || isLoadingCustomers) {
     return (
-      <div className="page-container pb-20">
+      <div className="page-container pb-20 dashboard-container">
         <TopNavigation />
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
@@ -156,7 +156,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="page-container pb-20">
+    <div className="page-container pb-20 dashboard-container">
       <TopNavigation />
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
