@@ -110,17 +110,65 @@ export class MemStorage implements IStorage {
     };
     this.createUser(defaultTech);
     
-    // Create a default customer
-    const defaultCustomer: InsertCustomer = {
-      name: "Grande Deluxe",
-      email: "info@grandedeluxe.com",
-      phone: "614-555-1234",
-      address: "123 Main St",
-      city: "Columbus",
-      state: "OH",
-      zip: "43231"
-    };
-    this.createCustomer(defaultCustomer);
+    // Create customers
+    const customers: InsertCustomer[] = [
+      {
+        name: "Grande Deluxe",
+        email: "info@grandedeluxe.com",
+        phone: "614-555-1234",
+        address: "123 Main St",
+        city: "Columbus",
+        state: "OH",
+        zip: "43231"
+      },
+      {
+        name: "Sunset Apartments",
+        email: "manager@sunsetapts.com",
+        phone: "614-555-8765",
+        address: "987 Sunset Blvd",
+        city: "Columbus",
+        state: "OH",
+        zip: "43220"
+      },
+      {
+        name: "Riverfront Hotel",
+        email: "maintenance@riverfronthotel.com",
+        phone: "614-555-3456",
+        address: "456 River Dr",
+        city: "Columbus",
+        state: "OH",
+        zip: "43215"
+      },
+      {
+        name: "Green Valley School",
+        email: "facilities@greenvalley.edu",
+        phone: "614-555-7890",
+        address: "2100 Education Way",
+        city: "Columbus",
+        state: "OH",
+        zip: "43210"
+      },
+      {
+        name: "Meadowbrook Hospital",
+        email: "engineering@meadowbrook.org",
+        phone: "614-555-9876",
+        address: "5678 Health Pkwy",
+        city: "Columbus",
+        state: "OH",
+        zip: "43219"
+      },
+      {
+        name: "Eastview Mall",
+        email: "operations@eastviewmall.com",
+        phone: "614-555-6543",
+        address: "800 Shopping Center Rd",
+        city: "Columbus",
+        state: "OH",
+        zip: "43230"
+      }
+    ];
+    
+    customers.forEach(customer => this.createCustomer(customer));
     
     // Create some default materials
     const materials: InsertMaterial[] = [
@@ -142,17 +190,137 @@ export class MemStorage implements IStorage {
     
     materials.forEach(m => this.createMaterial(m));
     
-    // Create a default job
-    const defaultJob: InsertJob = {
-      workOrderNumber: "252578",
-      customerId: 1,
-      technicianId: 1,
-      status: "in_progress",
-      description: "Replace light switch with dimmer switch",
-      scheduled: new Date(),
-      timeZone: "US/Eastern"
-    };
-    this.createJob(defaultJob);
+    // Create jobs
+    const jobs: InsertJob[] = [
+      {
+        workOrderNumber: "252578",
+        customerId: 1,
+        technicianId: 1,
+        status: "in_progress",
+        description: "Replace light switch with dimmer switch",
+        scheduled: new Date(),
+        timeZone: "US/Eastern"
+      },
+      {
+        workOrderNumber: "252579",
+        customerId: 2,
+        technicianId: 1,
+        status: "scheduled",
+        description: "Water leak from ceiling in unit 302, possible plumbing issue from unit above",
+        scheduled: new Date(Date.now() + 86400000), // Tomorrow
+        timeZone: "US/Eastern"
+      },
+      {
+        workOrderNumber: "252580",
+        customerId: 3,
+        technicianId: 1,
+        status: "scheduled",
+        description: "HVAC system making loud noise in lobby area, needs immediate attention",
+        scheduled: new Date(Date.now() + 2 * 86400000), // Day after tomorrow
+        timeZone: "US/Eastern"
+      },
+      {
+        workOrderNumber: "252581",
+        customerId: 4,
+        technicianId: 1,
+        status: "in_progress",
+        description: "Bathroom sink clogged in main administration building",
+        scheduled: new Date(Date.now() - 86400000), // Yesterday
+        timeZone: "US/Eastern"
+      },
+      {
+        workOrderNumber: "252582",
+        customerId: 5,
+        technicianId: 1,
+        status: "completed",
+        description: "Replace emergency lighting in east wing corridor",
+        scheduled: new Date(Date.now() - 3 * 86400000), // 3 days ago
+        timeZone: "US/Eastern"
+      },
+      {
+        workOrderNumber: "252583",
+        customerId: 6,
+        technicianId: 1,
+        status: "scheduled",
+        description: "Food court electrical outlets not working, affecting vendor operations",
+        scheduled: new Date(Date.now() + 4 * 86400000), // 4 days from now
+        timeZone: "US/Eastern"
+      }
+    ];
+    
+    jobs.forEach(job => this.createJob(job));
+    
+    // Create some sample notes for the jobs
+    const notes = [
+      {
+        jobId: 1,
+        content: "Initial inspection shows old light switch needs replacement with dimmer switch. Customer requested Lutron brand if available.",
+      },
+      {
+        jobId: 2,
+        content: "Resident reports water dripping from ceiling light fixture. Will need to inspect unit above to determine source of leak.",
+      },
+      {
+        jobId: 3,
+        content: "HVAC unit is making a loud rattling noise when running. Hotel manager says it started two days ago and is disturbing guests.",
+      },
+      {
+        jobId: 4,
+        content: "Sink is completely clogged and not draining at all. Attempted plunging with no success. Will need to remove trap.",
+      },
+      {
+        jobId: 5,
+        content: "Replaced all emergency lighting fixtures in the east wing. Tested all units and confirmed they're working properly on backup power.",
+      },
+      {
+        jobId: 6,
+        content: "Food court vendors report that several outlets are not working. Initial test shows no power to the north wall circuit.",
+      }
+    ];
+    
+    notes.forEach(note => this.createNote(note));
+    
+    // Create sample photos
+    const photos = [
+      {
+        jobId: 1,
+        caption: "Current light switch",
+        dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAXVBMVEX///8AAACsrKxlZWX29vb8/PxLS0uoqKjU1NR8fHzn5+ehoaHv7+9SUlLZ2dmWlpaxsbGAgIA4ODhzc3MPDw8pKSkdHR1dXV3IyMgxMTFCQkK5ublra2vCwsIWFhaOQdFGAAADq0lEQVR4nO1a25arIAwtKl6qVu3N2tra///L0d4SQDvHjq5yHvbDLBfEbEgCSWL8H4Fo9SyK1eteXhWRiV+Ecue9BjlIGTJIqQDJHrwqy4Le9jtQoVXPQFXC/QWyA61clYJd2RW0WrXbU2VR+OUqHzSyKDKXOItOvkCno33l0gWdrpX6g/LkQXSZwMSjkZQ+aVDXKFXtDnS4Vr4F8kCHAXpnQEWKL1AKs0Q1zCrQYiUXlM8W1LwfVfbmzMjkGTp0I1SuJXy5IPHcAQrDlxCjwJTkdZgvq2oGDO5g20U8QO7yFn2k0WDcVW4CsjNwN+lBe+PnLkH9AZzETdECu8DZ9IjJ8Mj1p46wYLgb9S0MveFGekbhGS58S6A+rO6mJ3Qs9DMNJ5i67mxnOMHZTnWCE9zMZHrGTh/4nIRUeO1C06PUzpGTADoAzwtwJaJM4Dh4K57YwJyF24f3QCfhKKxSP3n4QCBvQPyYAg7C6vA9wEH4VTMWcBQO5r6/QO4ZnuTCGwqmcDYXH+hCX9BfYXzGxwbNFFbGYBTYqJnqgbHVhc3xHUf/WwPwL2aDTdLiAuGdcPZ5TExh93KA/cN5UBB+fZU5Mb7gPMgIW3Fy/PVpMdoH0QnUBRj4SznYb7g4Jt8wFuBqXDJ6gntdY53w9hF+i2Aqmh4oTXgIX7dKGJsovYNbHPVxR6LnpyiXyQCeQzRe4IqzKLfgcQrWlrTRgotgYjgFO0vSaLxO8RI5BQeMUGNCF/Qnj18CNFdTQkjA31cIf6j3jQdU8FMdLnw9OfEBXvLihjP4iZa5hvXf+QawBhAPDqDaQDPXsAZKbuGjqd8TdtCz78U1dAF38Qm9mIIzXTjDr0UprB3IWgKrEG9WZGsJYpuQiRTERCxTKYoW8YJGmkQdRrwKUAOuWFZvUGMCWQdDmhglLAFUAXo3ZhVUzqw3JqBdkF+V8BLwJuybSq4A9lQlXCW+OfEqsMQP5UUDSHzAHKJIeWIzIxc0W4aO2qkLZ1lgHO5OgU3oQ0O/K3IKMHO2uP1XDtNOEBpNzCWj4aaO4Ro1m/QxDJUuM0eGnrZxqDMcLmkSxptwK0pNkTemuLtZdM8IzZfbplNVJU1Tx/ztJ9ZaHtqzVZeU7LPvj3Tp4Xc9YP3mDHZtwXX/bfOTdzXM8vStZ2m8rTN1j/ik3f5+h/gAh/jAK+4/SeMl2bsU2zgAAAAASUVORK5CYII=",
+        beforePhoto: true
+      },
+      {
+        jobId: 2,
+        caption: "Water damage on ceiling",
+        dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAXVBMVEX///8AAACsrKxlZWX29vb8/PxLS0uoqKjU1NR8fHzn5+ehoaHv7+9SUlLZ2dmWlpaxsbGAgIA4ODhzc3MPDw8pKSkdHR1dXV3IyMgxMTFCQkK5ublra2vCwsIWFhaOQdFGAAADq0lEQVR4nO1a25arIAwtKl6qVu3N2tra///L0d4SQDvHjq5yHvbDLBfEbEgCSWL8H4Fo9SyK1eteXhWRiV+Ecue9BjlIGTJIqQDJHrwqy4Le9jtQoVXPQFXC/QWyA61clYJd2RW0WrXbU2VR+OUqHzSyKDKXOItOvkCno33l0gWdrpX6g/LkQXSZwMSjkZQ+aVDXKFXtDnS4Vr4F8kCHAXpnQEWKL1AKs0Q1zCrQYiUXlM8W1LwfVfbmzMjkGTp0I1SuJXy5IPHcAQrDlxCjwJTkdZgvq2oGDO5g20U8QO7yFn2k0WDcVW4CsjNwN+lBe+PnLkH9AZzETdECu8DZ9IjJ8Mj1p46wYLgb9S0MveFGekbhGS58S6A+rO6mJ3Qs9DMNJ5i67mxnOMHZTnWCE9zMZHrGTh/4nIRUeO1C06PUzpGTADoAzwtwJaJM4Dh4K57YwJyF24f3QCfhKKxSP3n4QCBvQPyYAg7C6vA9wEH4VTMWcBQO5r6/QO4ZnuTCGwqmcDYXH+hCX9BfYXzGxwbNFFbGYBTYqJnqgbHVhc3xHUf/WwPwL2aDTdLiAuGdcPZ5TExh93KA/cN5UBB+fZU5Mb7gPMgIW3Fy/PVpMdoH0QnUBRj4SznYb7g4Jt8wFuBqXDJ6gntdY53w9hF+i2Aqmh4oTXgIX7dKGJsovYNbHPVxR6LnpyiXyQCeQzRe4IqzKLfgcQrWlrTRgotgYjgFO0vSaLxO8RI5BQeMUGNCF/Qnj18CNFdTQkjA31cIf6j3jQdU8FMdLnw9OfEBXvLihjP4iZa5hvXf+QawBhAPDqDaQDPXsAZKbuGjqd8TdtCz78U1dAF38Qm9mIIzXTjDr0UprB3IWgKrEG9WZGsJYpuQiRTERCxTKYoW8YJGmkQdRrwKUAOuWFZvUGMCWQdDmhglLAFUAXo3ZhVUzqw3JqBdkF+V8BLwJuybSq4A9lQlXCW+OfEqsMQP5UUDSHzAHKJIeWIzIxc0W4aO2qkLZ1lgHO5OgU3oQ0O/K3IKMHO2uP1XDtNOEBpNzCWj4aaO4Ro1m/QxDJUuM0eGnrZxqDMcLmkSxptwK0pNkTemuLtZdM8IzZfbplNVJU1Tx/ztJ9ZaHtqzVZeU7LPvj3Tp4Xc9YP3mDHZtwXX/bfOTdzXM8vStZ2m8rTN1j/ik3f5+h/gAh/jAK+4/SeMl2bsU2zgAAAAASUVORK5CYII=",
+        beforePhoto: true
+      },
+      {
+        jobId: 3,
+        caption: "HVAC unit in lobby",
+        dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAXVBMVEX///8AAACsrKxlZWX29vb8/PxLS0uoqKjU1NR8fHzn5+ehoaHv7+9SUlLZ2dmWlpaxsbGAgIA4ODhzc3MPDw8pKSkdHR1dXV3IyMgxMTFCQkK5ublra2vCwsIWFhaOQdFGAAADq0lEQVR4nO1a25arIAwtKl6qVu3N2tra///L0d4SQDvHjq5yHvbDLBfEbEgCSWL8H4Fo9SyK1eteXhWRiV+Ecue9BjlIGTJIqQDJHrwqy4Le9jtQoVXPQFXC/QWyA61clYJd2RW0WrXbU2VR+OUqHzSyKDKXOItOvkCno33l0gWdrpX6g/LkQXSZwMSjkZQ+aVDXKFXtDnS4Vr4F8kCHAXpnQEWKL1AKs0Q1zCrQYiUXlM8W1LwfVfbmzMjkGTp0I1SuJXy5IPHcAQrDlxCjwJTkdZgvq2oGDO5g20U8QO7yFn2k0WDcVW4CsjNwN+lBe+PnLkH9AZzETdECu8DZ9IjJ8Mj1p46wYLgb9S0MveFGekbhGS58S6A+rO6mJ3Qs9DMNJ5i67mxnOMHZTnWCE9zMZHrGTh/4nIRUeO1C06PUzpGTADoAzwtwJaJM4Dh4K57YwJyF24f3QCfhKKxSP3n4QCBvQPyYAg7C6vA9wEH4VTMWcBQO5r6/QO4ZnuTCGwqmcDYXH+hCX9BfYXzGxwbNFFbGYBTYqJnqgbHVhc3xHUf/WwPwL2aDTdLiAuGdcPZ5TExh93KA/cN5UBB+fZU5Mb7gPMgIW3Fy/PVpMdoH0QnUBRj4SznYb7g4Jt8wFuBqXDJ6gntdY53w9hF+i2Aqmh4oTXgIX7dKGJsovYNbHPVxR6LnpyiXyQCeQzRe4IqzKLfgcQrWlrTRgotgYjgFO0vSaLxO8RI5BQeMUGNCF/Qnj18CNFdTQkjA31cIf6j3jQdU8FMdLnw9OfEBXvLihjP4iZa5hvXf+QawBhAPDqDaQDPXsAZKbuGjqd8TdtCz78U1dAF38Qm9mIIzXTjDr0UprB3IWgKrEG9WZGsJYpuQiRTERCxTKYoW8YJGmkQdRrwKUAOuWFZvUGMCWQdDmhglLAFUAXo3ZhVUzqw3JqBdkF+V8BLwJuybSq4A9lQlXCW+OfEqsMQP5UUDSHzAHKJIeWIzIxc0W4aO2qkLZ1lgHO5OgU3oQ0O/K3IKMHO2uP1XDtNOEBpNzCWj4aaO4Ro1m/QxDJUuM0eGnrZxqDMcLmkSxptwK0pNkTemuLtZdM8IzZfbplNVJU1Tx/ztJ9ZaHtqzVZeU7LPvj3Tp4Xc9YP3mDHZtwXX/bfOTdzXM8vStZ2m8rTN1j/ik3f5+h/gAh/jAK+4/SeMl2bsU2zgAAAAASUVORK5CYII=",
+        beforePhoto: true
+      },
+      {
+        jobId: 4,
+        caption: "Clogged sink",
+        dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAXVBMVEX///8AAACsrKxlZWX29vb8/PxLS0uoqKjU1NR8fHzn5+ehoaHv7+9SUlLZ2dmWlpaxsbGAgIA4ODhzc3MPDw8pKSkdHR1dXV3IyMgxMTFCQkK5ublra2vCwsIWFhaOQdFGAAADq0lEQVR4nO1a25arIAwtKl6qVu3N2tra///L0d4SQDvHjq5yHvbDLBfEbEgCSWL8H4Fo9SyK1eteXhWRiV+Ecue9BjlIGTJIqQDJHrwqy4Le9jtQoVXPQFXC/QWyA61clYJd2RW0WrXbU2VR+OUqHzSyKDKXOItOvkCno33l0gWdrpX6g/LkQXSZwMSjkZQ+aVDXKFXtDnS4Vr4F8kCHAXpnQEWKL1AKs0Q1zCrQYiUXlM8W1LwfVfbmzMjkGTp0I1SuJXy5IPHcAQrDlxCjwJTkdZgvq2oGDO5g20U8QO7yFn2k0WDcVW4CsjNwN+lBe+PnLkH9AZzETdECu8DZ9IjJ8Mj1p46wYLgb9S0MveFGekbhGS58S6A+rO6mJ3Qs9DMNJ5i67mxnOMHZTnWCE9zMZHrGTh/4nIRUeO1C06PUzpGTADoAzwtwJaJM4Dh4K57YwJyF24f3QCfhKKxSP3n4QCBvQPyYAg7C6vA9wEH4VTMWcBQO5r6/QO4ZnuTCGwqmcDYXH+hCX9BfYXzGxwbNFFbGYBTYqJnqgbHVhc3xHUf/WwPwL2aDTdLiAuGdcPZ5TExh93KA/cN5UBB+fZU5Mb7gPMgIW3Fy/PVpMdoH0QnUBRj4SznYb7g4Jt8wFuBqXDJ6gntdY53w9hF+i2Aqmh4oTXgIX7dKGJsovYNbHPVxR6LnpyiXyQCeQzRe4IqzKLfgcQrWlrTRgotgYjgFO0vSaLxO8RI5BQeMUGNCF/Qnj18CNFdTQkjA31cIf6j3jQdU8FMdLnw9OfEBXvLihjP4iZa5hvXf+QawBhAPDqDaQDPXsAZKbuGjqd8TdtCz78U1dAF38Qm9mIIzXTjDr0UprB3IWgKrEG9WZGsJYpuQiRTERCxTKYoW8YJGmkQdRrwKUAOuWFZvUGMCWQdDmhglLAFUAXo3ZhVUzqw3JqBdkF+V8BLwJuybSq4A9lQlXCW+OfEqsMQP5UUDSHzAHKJIeWIzIxc0W4aO2qkLZ1lgHO5OgU3oQ0O/K3IKMHO2uP1XDtNOEBpNzCWj4aaO4Ro1m/QxDJUuM0eGnrZxqDMcLmkSxptwK0pNkTemuLtZdM8IzZfbplNVJU1Tx/ztJ9ZaHtqzVZeU7LPvj3Tp4Xc9YP3mDHZtwXX/bfOTdzXM8vStZ2m8rTN1j/ik3f5+h/gAh/jAK+4/SeMl2bsU2zgAAAAASUVORK5CYII=",
+        beforePhoto: true
+      },
+      {
+        jobId: 5,
+        caption: "New emergency lighting installed",
+        dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAXVBMVEX///8AAACsrKxlZWX29vb8/PxLS0uoqKjU1NR8fHzn5+ehoaHv7+9SUlLZ2dmWlpaxsbGAgIA4ODhzc3MPDw8pKSkdHR1dXV3IyMgxMTFCQkK5ublra2vCwsIWFhaOQdFGAAADq0lEQVR4nO1a25arIAwtKl6qVu3N2tra///L0d4SQDvHjq5yHvbDLBfEbEgCSWL8H4Fo9SyK1eteXhWRiV+Ecue9BjlIGTJIqQDJHrwqy4Le9jtQoVXPQFXC/QWyA61clYJd2RW0WrXbU2VR+OUqHzSyKDKXOItOvkCno33l0gWdrpX6g/LkQXSZwMSjkZQ+aVDXKFXtDnS4Vr4F8kCHAXpnQEWKL1AKs0Q1zCrQYiUXlM8W1LwfVfbmzMjkGTp0I1SuJXy5IPHcAQrDlxCjwJTkdZgvq2oGDO5g20U8QO7yFn2k0WDcVW4CsjNwN+lBe+PnLkH9AZzETdECu8DZ9IjJ8Mj1p46wYLgb9S0MveFGekbhGS58S6A+rO6mJ3Qs9DMNJ5i67mxnOMHZTnWCE9zMZHrGTh/4nIRUeO1C06PUzpGTADoAzwtwJaJM4Dh4K57YwJyF24f3QCfhKKxSP3n4QCBvQPyYAg7C6vA9wEH4VTMWcBQO5r6/QO4ZnuTCGwqmcDYXH+hCX9BfYXzGxwbNFFbGYBTYqJnqgbHVhc3xHUf/WwPwL2aDTdLiAuGdcPZ5TExh93KA/cN5UBB+fZU5Mb7gPMgIW3Fy/PVpMdoH0QnUBRj4SznYb7g4Jt8wFuBqXDJ6gntdY53w9hF+i2Aqmh4oTXgIX7dKGJsovYNbHPVxR6LnpyiXyQCeQzRe4IqzKLfgcQrWlrTRgotgYjgFO0vSaLxO8RI5BQeMUGNCF/Qnj18CNFdTQkjA31cIf6j3jQdU8FMdLnw9OfEBXvLihjP4iZa5hvXf+QawBhAPDqDaQDPXsAZKbuGjqd8TdtCz78U1dAF38Qm9mIIzXTjDr0UprB3IWgKrEG9WZGsJYpuQiRTERCxTKYoW8YJGmkQdRrwKUAOuWFZvUGMCWQdDmhglLAFUAXo3ZhVUzqw3JqBdkF+V8BLwJuybSq4A9lQlXCW+OfEqsMQP5UUDSHzAHKJIeWIzIxc0W4aO2qkLZ1lgHO5OgU3oQ0O/K3IKMHO2uP1XDtNOEBpNzCWj4aaO4Ro1m/QxDJUuM0eGnrZxqDMcLmkSxptwK0pNkTemuLtZdM8IzZfbplNVJU1Tx/ztJ9ZaHtqzVZeU7LPvj3Tp4Xc9YP3mDHZtwXX/bfOTdzXM8vStZ2m8rTN1j/ik3f5+h/gAh/jAK+4/SeMl2bsU2zgAAAAASUVORK5CYII=",
+        beforePhoto: false
+      },
+      {
+        jobId: 6,
+        caption: "Non-working electrical outlet",
+        dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAXVBMVEX///8AAACsrKxlZWX29vb8/PxLS0uoqKjU1NR8fHzn5+ehoaHv7+9SUlLZ2dmWlpaxsbGAgIA4ODhzc3MPDw8pKSkdHR1dXV3IyMgxMTFCQkK5ublra2vCwsIWFhaOQdFGAAADq0lEQVR4nO1a25arIAwtKl6qVu3N2tra///L0d4SQDvHjq5yHvbDLBfEbEgCSWL8H4Fo9SyK1eteXhWRiV+Ecue9BjlIGTJIqQDJHrwqy4Le9jtQoVXPQFXC/QWyA61clYJd2RW0WrXbU2VR+OUqHzSyKDKXOItOvkCno33l0gWdrpX6g/LkQXSZwMSjkZQ+aVDXKFXtDnS4Vr4F8kCHAXpnQEWKL1AKs0Q1zCrQYiUXlM8W1LwfVfbmzMjkGTp0I1SuJXy5IPHcAQrDlxCjwJTkdZgvq2oGDO5g20U8QO7yFn2k0WDcVW4CsjNwN+lBe+PnLkH9AZzETdECu8DZ9IjJ8Mj1p46wYLgb9S0MveFGekbhGS58S6A+rO6mJ3Qs9DMNJ5i67mxnOMHZTnWCE9zMZHrGTh/4nIRUeO1C06PUzpGTADoAzwtwJaJM4Dh4K57YwJyF24f3QCfhKKxSP3n4QCBvQPyYAg7C6vA9wEH4VTMWcBQO5r6/QO4ZnuTCGwqmcDYXH+hCX9BfYXzGxwbNFFbGYBTYqJnqgbHVhc3xHUf/WwPwL2aDTdLiAuGdcPZ5TExh93KA/cN5UBB+fZU5Mb7gPMgIW3Fy/PVpMdoH0QnUBRj4SznYb7g4Jt8wFuBqXDJ6gntdY53w9hF+i2Aqmh4oTXgIX7dKGJsovYNbHPVxR6LnpyiXyQCeQzRe4IqzKLfgcQrWlrTRgotgYjgFO0vSaLxO8RI5BQeMUGNCF/Qnj18CNFdTQkjA31cIf6j3jQdU8FMdLnw9OfEBXvLihjP4iZa5hvXf+QawBhAPDqDaQDPXsAZKbuGjqd8TdtCz78U1dAF38Qm9mIIzXTjDr0UprB3IWgKrEG9WZGsJYpuQiRTERCxTKYoW8YJGmkQdRrwKUAOuWFZvUGMCWQdDmhglLAFUAXo3ZhVUzqw3JqBdkF+V8BLwJuybSq4A9lQlXCW+OfEqsMQP5UUDSHzAHKJIeWIzIxc0W4aO2qkLZ1lgHO5OgU3oQ0O/K3IKMHO2uP1XDtNOEBpNzCWj4aaO4Ro1m/QxDJUuM0eGnrZxqDMcLmkSxptwK0pNkTemuLtZdM8IzZfbplNVJU1Tx/ztJ9ZaHtqzVZeU7LPvj3Tp4Xc9YP3mDHZtwXX/bfOTdzXM8vStZ2m8rTN1j/ik3f5+h/gAh/jAK+4/SeMl2bsU2zgAAAAASUVORK5CYII=",
+        beforePhoto: true
+      }
+    ];
+    
+    photos.forEach(photo => this.createPhoto(photo));
   }
 
   // User operations
