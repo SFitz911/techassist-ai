@@ -135,10 +135,15 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
       const popupContent = document.createElement('div');
       popupContent.className = 'custom-popup-content';
       
-      // Add job info to popup
+      // Add job info to popup with status badge
       popupContent.innerHTML = `
         <div class="popup-header">
-          <h3>Work Order #<span class="text-yellow-500 font-bold">${job.workOrderNumber}</span></h3>
+          <div class="flex justify-between items-start mb-1">
+            <h3>Work Order #<span class="text-yellow-500 font-bold">${job.workOrderNumber}</span></h3>
+            <span class="status-badge status-${job.status.toLowerCase().replace(' ', '-')}">
+              ${job.status}
+            </span>
+          </div>
           <p>${job.customer.name}</p>
         </div>
         <div class="popup-content">
@@ -153,7 +158,8 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
         </div>
         <div class="popup-footer">
           <a href="/jobs/${job.id}" class="view-details-btn">
-            View Details
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            View Job Details
           </a>
           <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${job.customer.address}, ${job.customer.city}, ${job.customer.state}`)}" class="get-directions-btn" target="_blank">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
@@ -338,6 +344,37 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
         
         .get-directions-btn:hover {
           background: linear-gradient(to right, #16a34a, #15803d);
+        }
+        
+        /* Status badge styles */
+        .status-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 3px 8px;
+          border-radius: 12px;
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .status-scheduled {
+          background-color: rgba(234, 179, 8, 0.2);
+          color: #eab308;
+          border: 1px solid rgba(234, 179, 8, 0.4);
+        }
+        
+        .status-in-progress {
+          background-color: rgba(59, 130, 246, 0.2);
+          color: #3b82f6;
+          border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+        
+        .status-completed {
+          background-color: rgba(34, 197, 94, 0.2);
+          color: #22c55e;
+          border: 1px solid rgba(34, 197, 94, 0.4);
         }
       `}</style>
     </div>
