@@ -482,7 +482,18 @@ Be specific about parts needed so a technician can search for these exact items 
           });
         });
         
-        const stores = Array.from(storeMap.values());
+        let stores = Array.from(storeMap.values());
+        
+        // Add latitude and longitude from mock store data
+        stores = stores.map(store => {
+          // Find the matching store in our mock data to get coordinates
+          const mockStore = stores.find(ms => ms.name === store.name);
+          return {
+            ...store,
+            latitude: mockStore?.latitude || 40.0, // Default to Columbus, OH area if not found
+            longitude: mockStore?.longitude || -83.0
+          };
+        });
         
         // Log the results for debugging
         console.log(`[express] Found ${stores.length} stores with parts matching "${query}"`);
@@ -498,6 +509,8 @@ Be specific about parts needed so a technician can search for these exact items 
             name: "Home Depot",
             distance: "2.3 miles",
             address: "3721 W Dublin Granville Rd, Columbus, OH 43235",
+            latitude: 40.099136,
+            longitude: -83.073486,
             parts: [
               {
                 id: 101,
@@ -514,6 +527,8 @@ Be specific about parts needed so a technician can search for these exact items 
             name: "Lowe's",
             distance: "3.8 miles",
             address: "2345 Silver Dr, Columbus, OH 43211",
+            latitude: 40.020939,
+            longitude: -82.974447,
             parts: [
               {
                 id: 201,
@@ -685,10 +700,8 @@ Be specific about parts needed so a technician can search for these exact items 
             name: "Home Depot",
             distance: "2.3 miles",
             address: "3721 W Dublin Granville Rd, Columbus, OH 43235",
-            location: {
-              latitude: 40.099136,
-              longitude: -83.073486
-            },
+            latitude: 40.099136,
+            longitude: -83.073486,
             parts: [
               {
                 id: 101,
@@ -705,10 +718,8 @@ Be specific about parts needed so a technician can search for these exact items 
             name: "Lowe's",
             distance: "3.8 miles",
             address: "2345 Silver Dr, Columbus, OH 43211",
-            location: {
-              latitude: 40.020939,
-              longitude: -82.974447
-            },
+            latitude: 40.020939,
+            longitude: -82.974447,
             parts: [
               {
                 id: 201,
@@ -725,10 +736,8 @@ Be specific about parts needed so a technician can search for these exact items 
             name: "Ace Hardware",
             distance: "1.4 miles",
             address: "4340 N High St, Columbus, OH 43214",
-            location: {
-              latitude: 40.051957,
-              longitude: -83.018582
-            },
+            latitude: 40.051957,
+            longitude: -83.018582,
             parts: [
               {
                 id: 301,
