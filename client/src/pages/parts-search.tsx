@@ -303,7 +303,7 @@ export default function PartsSearchPage() {
                   <SelectContent>
                     {jobs?.map((job: any) => (
                       <SelectItem key={job.id} value={job.id.toString()}>
-                        WO #{job.workOrderNumber} - {job.description.substring(0, 30)}...
+                        WO #{job.workOrderNumber} - {job.description?.substring(0, 30)}...
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -435,8 +435,8 @@ export default function PartsSearchPage() {
                                 setSearchType('text');
                                 setTimeout(() => refetchTextSearch(), 100);
                               }}
-                              variant="outline"
-                              className="w-full mt-2 border-blue-400 text-blue-400 hover:bg-blue-400/10"
+                              className="w-full mt-2"
+                              variant="secondary"
                             >
                               <Search className="h-4 w-4 mr-2" />
                               Search for this part
@@ -452,11 +452,13 @@ export default function PartsSearchPage() {
           </CardContent>
         </Card>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           {isLoading && (
-            <div className="flex flex-col items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin mb-4" />
-              <p className="text-muted-foreground">Searching local hardware stores...</p>
+            <div className="flex justify-center py-12">
+              <div className="flex flex-col items-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                <p className="text-muted-foreground">Searching for parts...</p>
+              </div>
             </div>
           )}
           
@@ -464,105 +466,116 @@ export default function PartsSearchPage() {
             <Card className="border-destructive">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <p className="font-medium text-destructive mb-2">Error searching for parts</p>
+                  <p className="font-medium text-lg mb-2 text-destructive">Error fetching results</p>
                   <p className="text-muted-foreground">
-                    There was a problem connecting to local hardware stores. Please try again later.
+                    There was a problem searching for parts. Please try again later.
                   </p>
                 </div>
               </CardContent>
             </Card>
           )}
           
-          {!isLoading && !isError && searchResults && (
-            searchResults.length === 0 ? (
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center">
-                    <ShoppingBag className="h-8 w-8 mb-4 text-muted-foreground" />
-                    <p className="font-medium mb-2">No parts found</p>
-                    <p className="text-muted-foreground">
-                      We couldn't find any parts matching "{searchQuery}" in local stores.
-                      Try different search terms or check back later.
-                    </p>
+          {searchResults && searchResults.length === 0 && !isLoading && !isError && (
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <Search className="h-12 w-12 mb-4 text-muted-foreground" />
+                  <p className="font-medium text-lg mb-2">No results found</p>
+                  <p className="text-muted-foreground">
+                    Try searching with different keywords or categories.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {searchResults && searchResults.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">Store Locations</h3>
+              <div className="bg-muted rounded-lg overflow-hidden">
+                <IframeStoreMap 
+                  stores={searchResults} 
+                  selectedPartName={searchType === 'text' ? searchQuery : imageSearchResults?.query || null}
+                  height="350px"
+                />
+              </div>
+            </div>
+          )}
+          
+          {searchResults && searchResults.length > 0 && !isLoading && !isError && (
+            searchResults.map((store: any) => (
+              <Card key={store.id} className="overflow-hidden">
+                <CardHeader className="pb-0">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-white rounded-md flex items-center justify-center shrink-0 border">
+                      <Store className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{store.name}</CardTitle>
+                      <CardDescription>
+                        {store.distance} • {store.address}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  {/* Add store location map */}
+                  {store.latitude && store.longitude && (
+                    <div className="mb-4 border border-border rounded-md overflow-hidden">
+                      <IframeStoreMap 
+                        stores={[store]} 
+                        selectedPartName={store.parts && store.parts[0] ? store.parts[0].name : 'Parts'}
+                        height="250px"
+                      />
+                    </div>
+                  )}
+                  <div className="space-y-3">
+                    {store.parts.map((part: any) => {
+                      const isAdded = isPartAdded(part.id);
+                      return (
+                        <div key={part.id} className="flex items-center justify-between p-3 rounded-md bg-muted/50">
+                          <div className="flex items-start gap-3">
+                            <div className="h-12 w-12 rounded-md bg-background flex items-center justify-center shrink-0">
+                              <ShoppingBag className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <div>
+                              <p className="font-medium">{part.name}</p>
+                              <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm font-medium text-primary">
+                                  {formatPrice(part.price)}
+                                </span>
+                                <Badge variant={part.inStock ? "outline" : "secondary"}>
+                                  {part.inStock ? "In Stock" : "Out of Stock"}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          <Button 
+                            variant={isAdded ? "secondary" : "default"}
+                            onClick={() => addPartToEstimate(part, store)}
+                            disabled={isAdded || !part.inStock || !jobId}
+                            className="ml-4"
+                          >
+                            {isAdded ? (
+                              <>
+                                <Check className="h-4 w-4 mr-2" />
+                                Added
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart className="h-4 w-4 mr-2" />
+                                Add to Estimate
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              searchResults.map((store: any) => (
-                <Card key={store.id}>
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="flex items-center gap-2">
-                          <Store className="h-5 w-5" />
-                          {store.name}
-                        </CardTitle>
-                        <CardDescription className="flex items-center mt-1">
-                          <MapPin className="h-3.5 w-3.5 mr-1" />
-                          {store.distance ? `${store.distance} away` : store.address}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    {/* Add store location map */}
-                    {store.latitude && store.longitude && (
-                      <div className="mb-4 border border-border rounded-md overflow-hidden">
-                        <IframeStoreMap 
-                          stores={[store]} 
-                          selectedPartName={store.parts && store.parts[0] ? store.parts[0].name : 'Parts'}
-                          height="250px"
-                        />
-                      </div>
-                    )}
-                    <div className="space-y-3">
-                      {store.parts.map((part: any) => {
-                        const isAdded = isPartAdded(part.id);
-                        return (
-                          <div key={part.id} className="flex items-center justify-between p-3 rounded-md bg-muted/50">
-                            <div className="flex items-start gap-3">
-                              <div className="h-12 w-12 rounded-md bg-background flex items-center justify-center shrink-0">
-                                <ShoppingBag className="h-6 w-6 text-muted-foreground" />
-                              </div>
-                              <div>
-                                <p className="font-medium">{part.name}</p>
-                                <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <span className="text-sm font-medium text-primary">
-                                    {formatPrice(part.price)}
-                                  </span>
-                                  <Badge variant={part.inStock ? "outline" : "secondary"}>
-                                    {part.inStock ? "In Stock" : "Out of Stock"}
-                                  </Badge>
-                                </div>
-                              </div>
-                            </div>
-                            <Button 
-                              variant={isAdded ? "secondary" : "default"}
-                              onClick={() => addPartToEstimate(part, store)}
-                              disabled={isAdded || !part.inStock || !jobId}
-                              className="ml-4"
-                            >
-                              {isAdded ? (
-                                <>
-                                  <Check className="h-4 w-4 mr-2" />
-                                  Added
-                                </>
-                              ) : (
-                                <>
-                                  <ShoppingCart className="h-4 w-4 mr-2" />
-                                  Add to Estimate
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )
+            ))
           )}
           
           {!searchResults && !isLoading && (
