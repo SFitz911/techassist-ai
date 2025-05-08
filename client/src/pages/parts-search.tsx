@@ -174,8 +174,13 @@ export default function PartsSearchPage() {
   const handleTextSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      console.log('Starting text search for:', searchQuery);
       setSearchType('text');
-      refetchTextSearch();
+      refetchTextSearch().then((result) => {
+        console.log('Search results:', result.data);
+      }).catch(err => {
+        console.error('Search error:', err);
+      });
     }
   };
   

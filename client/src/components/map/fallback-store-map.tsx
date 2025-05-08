@@ -56,9 +56,9 @@ export default function FallbackStoreMap({
                       <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30">
                         {store.distance || '2.3 miles away'}
                       </Badge>
-                      {store.parts && store.parts.length > 0 && (
+                      {(store as any).parts && (store as any).parts.length > 0 && (
                         <Badge variant="outline" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
-                          {store.parts.length} items in stock
+                          {(store as any).parts.length} items in stock
                         </Badge>
                       )}
                     </div>
