@@ -754,7 +754,8 @@ Be specific about parts needed so a technician can search for these exact items 
         return res.json({
           success: true,
           query: searchQuery,
-          stores
+          stores,
+          mapboxToken: process.env.MAPBOX_ACCESS_TOKEN
         });
       } catch (aiError: any) {
         console.error("AI processing error:", aiError);

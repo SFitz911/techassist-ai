@@ -3,9 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, ExternalLink } from 'lucide-react';
 
-// Use Mapbox token directly
-// We know the token exists in the environment as confirmed by check_secrets
-mapboxgl.accessToken = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
+// Note: Mapbox token is provided via props
 
 interface StoreLocationMapProps {
   storeName: string;

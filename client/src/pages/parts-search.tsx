@@ -105,7 +105,8 @@ export default function PartsSearchPage() {
   });
   
   // Compute derived values
-  const searchResults = searchType === 'text' ? textSearchResults : imageSearchResults?.stores;
+  const searchResults = searchType === 'text' ? textSearchResults?.stores : imageSearchResults?.stores;
+  const mapboxToken = searchType === 'text' ? textSearchResults?.mapboxToken : imageSearchResults?.mapboxToken;
   const aiGeneratedDescription = 
     searchType === 'image' && imageSearchResults?.query ? 
     `AI identified: "${imageSearchResults.query}"` : null;
@@ -509,6 +510,7 @@ export default function PartsSearchPage() {
                           latitude={store.latitude}
                           longitude={store.longitude}
                           className="h-48 w-full"
+                          mapboxToken={mapboxToken}
                         />
                       </div>
                     )}
