@@ -13,14 +13,14 @@ import {
   Upload,
   FileImage,
   Sparkles,
-  Map
+  Map as MapIcon
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { identifyPartsFromJobImages, searchPartsByImage } from '@/lib/openai';
 import { useToast } from '@/hooks/use-toast';
+import StoreLocationMap from '@/components/map/store-location-map';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
-import StoreLocationMap from '@/components/map/store-location-map';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -50,9 +50,6 @@ export default function PartsSearchPage() {
   const [aiGeneratedQuery, setAiGeneratedQuery] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  
-  // Rename Map icon to avoid conflict with JavaScript Map object
-  const MapIcon = Map;
 
   // Get available jobs for the dropdown
   const { data: jobs } = useQuery({
