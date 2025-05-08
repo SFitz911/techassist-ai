@@ -109,14 +109,18 @@ export default function PartsSearchPage() {
   const { token: mapboxToken } = useMapboxToken();
   
   // Compute derived values
-  const searchResults = searchType === 'text' ? textSearchResults?.stores : imageSearchResults?.stores;
+  const searchResults = searchType === 'text' ? textSearchResults : imageSearchResults?.stores;
+  console.log('Current search results:', searchResults);
+  
   const aiGeneratedDescription = 
     searchType === 'image' && imageSearchResults?.query ? 
     `AI identified: "${imageSearchResults.query}"` : null;
+  
   const isLoading = 
     (searchType === 'text' && isLoadingTextSearch) || 
     (searchType === 'image' && isLoadingImageSearch) ||
     isLoadingJobImageAnalysis;
+  
   const isError = 
     (searchType === 'text' && isErrorTextSearch) || 
     (searchType === 'image' && isErrorImageSearch) ||
@@ -494,7 +498,7 @@ export default function PartsSearchPage() {
             </Card>
           )}
           
-          {searchResults && searchResults.length > 0 && (
+          {searchResults && Array.isArray(searchResults) && searchResults.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-3">Store Locations</h3>
               <div className="bg-muted rounded-lg overflow-hidden">
@@ -507,7 +511,7 @@ export default function PartsSearchPage() {
             </div>
           )}
           
-          {searchResults && searchResults.length > 0 && !isLoading && !isError && (
+          {searchResults && Array.isArray(searchResults) && searchResults.length > 0 && !isLoading && !isError && (
             searchResults.map((store: any) => (
               <Card key={store.id} className="overflow-hidden">
                 <CardHeader className="pb-0">
@@ -535,48 +539,54 @@ export default function PartsSearchPage() {
                     </div>
                   )}
                   <div className="space-y-3">
-                    {store.parts.map((part: any) => {
-                      const isAdded = isPartAdded(part.id);
-                      return (
-                        <div key={part.id} className="flex items-center justify-between p-3 rounded-md bg-muted/50">
-                          <div className="flex items-start gap-3">
-                            <div className="h-12 w-12 rounded-md bg-background flex items-center justify-center shrink-0">
-                              <ShoppingBag className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                            <div>
-                              <p className="font-medium">{part.name}</p>
-                              <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-sm font-medium text-primary">
-                                  {formatPrice(part.price)}
-                                </span>
-                                <Badge variant={part.inStock ? "outline" : "secondary"}>
-                                  {part.inStock ? "In Stock" : "Out of Stock"}
-                                </Badge>
+                    {!store.parts || !Array.isArray(store.parts) || store.parts.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground">
+                        No parts available for this store.
+                      </div>
+                    ) : (
+                      store.parts.map((part: any) => {
+                        const isAdded = isPartAdded(part.id);
+                        return (
+                          <div key={part.id} className="flex items-center justify-between p-3 rounded-md bg-muted/50">
+                            <div className="flex items-start gap-3">
+                              <div className="h-12 w-12 rounded-md bg-background flex items-center justify-center shrink-0">
+                                <ShoppingBag className="h-6 w-6 text-muted-foreground" />
+                              </div>
+                              <div>
+                                <p className="font-medium">{part.name}</p>
+                                <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="text-sm font-medium text-primary">
+                                    {formatPrice(part.price)}
+                                  </span>
+                                  <Badge variant={part.inStock ? "outline" : "secondary"}>
+                                    {part.inStock ? "In Stock" : "Out of Stock"}
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
+                            <Button 
+                              variant={isAdded ? "secondary" : "default"}
+                              onClick={() => addPartToEstimate(part, store)}
+                              disabled={isAdded || !part.inStock || !jobId}
+                              className="ml-4"
+                            >
+                              {isAdded ? (
+                                <>
+                                  <Check className="h-4 w-4 mr-2" />
+                                  Added
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingCart className="h-4 w-4 mr-2" />
+                                  Add to Estimate
+                                </>
+                              )}
+                            </Button>
                           </div>
-                          <Button 
-                            variant={isAdded ? "secondary" : "default"}
-                            onClick={() => addPartToEstimate(part, store)}
-                            disabled={isAdded || !part.inStock || !jobId}
-                            className="ml-4"
-                          >
-                            {isAdded ? (
-                              <>
-                                <Check className="h-4 w-4 mr-2" />
-                                Added
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingCart className="h-4 w-4 mr-2" />
-                                Add to Estimate
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      );
-                    })}
+                        );
+                      })
+                    )}
                   </div>
                 </CardContent>
               </Card>
