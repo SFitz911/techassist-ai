@@ -24,8 +24,14 @@ export default function NavigationBar({ activeTab, onChange }: NavigationBarProp
             className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
             onClick={() => onChange(tab.id)}
           >
-            <Icon className="tab-button-icon" />
-            <span>{tab.label}</span>
+            <Icon 
+              className={`tab-button-icon ${
+                activeTab === tab.id 
+                  ? "text-green-500" 
+                  : "text-yellow-500"
+              }`} 
+            />
+            <span className={activeTab === tab.id ? "text-green-500 font-medium" : ""}>{tab.label}</span>
           </button>
         );
       })}

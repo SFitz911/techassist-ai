@@ -125,11 +125,15 @@
   }
   
   .tab-button {
-    @apply flex flex-col items-center text-muted-foreground text-xs gap-1 transition-colors;
+    @apply flex flex-col items-center text-muted-foreground text-xs gap-1 transition-colors py-1 px-3 rounded-lg;
+  }
+  
+  .tab-button:hover {
+    @apply bg-slate-800/20;
   }
   
   .tab-button.active {
-    @apply text-primary;
+    @apply text-green-500 font-medium bg-green-900/20;
   }
   
   .tab-button-icon {
