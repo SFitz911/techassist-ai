@@ -37,7 +37,7 @@ export function StatusBadge({
   const { toast } = useToast();
   
   const getStatusDetails = (status: string) => {
-    const statusLower = status.toLowerCase();
+    const statusLower = status.toLowerCase().replace('_', ' ');
     
     switch (statusLower) {
       case 'scheduled':
@@ -68,7 +68,7 @@ export function StatusBadge({
         return {
           icon: <Clock className={`${size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5'} mr-1`} />,
           className: 'bg-slate-900/30 text-slate-500 border-slate-500/50 hover:bg-slate-900/40',
-          label: status
+          label: status.replace('_', ' ')
         };
     }
   };
@@ -126,7 +126,7 @@ export function StatusBadge({
   
   const statusOptions = [
     { value: 'scheduled', label: 'Scheduled', icon: <Calendar className="h-4 w-4 mr-2" /> },
-    { value: 'in progress', label: 'In Progress', icon: <MapPin className="h-4 w-4 mr-2" /> },
+    { value: 'in_progress', label: 'In Progress', icon: <MapPin className="h-4 w-4 mr-2" /> },
     { value: 'completed', label: 'Completed', icon: <CheckCheck className="h-4 w-4 mr-2" /> }
   ];
   
@@ -158,9 +158,9 @@ export function StatusBadge({
               {statusOptions.map((option) => (
                 <button
                   key={option.value}
-                  className={`w-full flex items-center text-sm px-2 py-1.5 rounded-md hover:bg-secondary ${status.toLowerCase() === option.value ? 'bg-primary/10 font-medium' : ''}`}
+                  className={`w-full flex items-center text-sm px-2 py-1.5 rounded-md hover:bg-secondary ${status.toLowerCase().replace('_', ' ') === option.value.replace('_', ' ') ? 'bg-primary/10 font-medium' : ''}`}
                   onClick={() => handleStatusChange(option.value)}
-                  disabled={status.toLowerCase() === option.value}
+                  disabled={status.toLowerCase().replace('_', ' ') === option.value.replace('_', ' ')}
                 >
                   {option.icon}
                   {option.label}
