@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Link } from 'wouter';
 import { MapPin, Home, Calendar, Clock, ArrowRight } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Customer, Job } from '@shared/schema';
+import { Map, NavigationControl, FullscreenControl, Marker, Popup } from 'react-map-gl';
 
 // Define a type for combined job data
 type JobWithCustomer = {
@@ -15,9 +15,8 @@ type JobWithCustomer = {
   coordinates: [number, number];
 };
 
-// Mapbox token - in a real application, this should be an environment variable
-// For demo purposes, we're using a rotating token
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+// Use the Mapbox token from environment variables
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';
 
 interface JobMapProps {
   jobs: Job[];
