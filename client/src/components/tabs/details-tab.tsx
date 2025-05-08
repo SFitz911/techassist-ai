@@ -231,7 +231,7 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-start">
-              <Info className="h-4 w-4 mt-0.5 mr-2 text-muted-foreground" />
+              <Info className="h-4 w-4 mt-0.5 mr-2 text-emerald-500" />
               <div>
                 <p className="font-medium">Description</p>
                 <p className="text-sm text-muted-foreground">{job.description}</p>
@@ -239,7 +239,7 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
             </div>
             
             <div className="flex items-start">
-              <Clock className="h-4 w-4 mt-0.5 mr-2 text-muted-foreground" />
+              <Clock className="h-4 w-4 mt-0.5 mr-2 text-orange-500" />
               <div>
                 <p className="font-medium">Status</p>
                 <p className="text-sm text-muted-foreground capitalize">{job.status.replace('_', ' ')}</p>
@@ -247,7 +247,7 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
             </div>
             
             <div className="flex items-start">
-              <Calendar className="h-4 w-4 mt-0.5 mr-2 text-muted-foreground" />
+              <Calendar className="h-4 w-4 mt-0.5 mr-2 text-purple-500" />
               <div>
                 <p className="font-medium">Scheduled</p>
                 <p className="text-sm text-muted-foreground">
@@ -339,7 +339,7 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
                 <Separator />
                 <div>
                   <Label className="text-sm font-medium flex items-center mb-2">
-                    <Tool className="h-4 w-4 mr-1.5 text-blue-500" />
+                    <Wrench className="h-4 w-4 mr-1.5 text-blue-500" />
                     Additional Recommended Items
                   </Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

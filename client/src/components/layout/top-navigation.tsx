@@ -55,6 +55,22 @@ export default function TopNavigation({ userName = "Technician", userAvatar }: T
     return navItems.map((item) => {
       const Icon = item.icon;
       
+      // Give each nav item a unique color
+      const getIconColor = (path: string) => {
+        switch(path) {
+          case "/":
+            return "text-amber-500";
+          case "/map":
+            return "text-emerald-500";
+          case "/profile":
+            return "text-blue-500";
+          case "/settings":
+            return "text-purple-500";
+          default:
+            return "text-muted-foreground";
+        }
+      };
+      
       return (
         <Link key={item.path} href={item.path}>
           <Button
@@ -62,11 +78,13 @@ export default function TopNavigation({ userName = "Technician", userAvatar }: T
             size="sm"
             className={cn(
               "flex items-center gap-2",
-              isActive(item.path) ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+              isActive(item.path) 
+                ? "bg-primary text-primary-foreground" 
+                : "hover:bg-accent hover:text-primary"
             )}
             onClick={() => setIsOpen(false)}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className={cn("h-4 w-4", getIconColor(item.path))} />
             <span>{item.label}</span>
           </Button>
         </Link>
@@ -139,7 +157,7 @@ export default function TopNavigation({ userName = "Technician", userAvatar }: T
               <DropdownMenuItem asChild>
                 <Link href="/profile">
                   <div className="flex w-full items-center">
-                    <User className="mr-2 h-4 w-4" />
+                    <User className="mr-2 h-4 w-4 text-blue-500" />
                     <span>Profile</span>
                   </div>
                 </Link>
@@ -147,14 +165,14 @@ export default function TopNavigation({ userName = "Technician", userAvatar }: T
               <DropdownMenuItem asChild>
                 <Link href="/settings">
                   <div className="flex w-full items-center">
-                    <Settings className="mr-2 h-4 w-4" />
+                    <Settings className="mr-2 h-4 w-4 text-purple-500" />
                     <span>Settings</span>
                   </div>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogOut className="mr-2 h-4 w-4 text-rose-500" />
                 <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
