@@ -207,9 +207,9 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
                   disabled={updateWoMutation.isPending}
                 >
                   {updateWoMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin text-yellow-500" />
                   ) : (
-                    <Save className="h-4 w-4" />
+                    <Save className="h-4 w-4 text-green-500" />
                   )}
                 </Button>
               </div>
@@ -222,7 +222,7 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
                   className="h-6 w-6" 
                   onClick={() => setEditingWoNumber(true)}
                 >
-                  <Edit2 className="h-3.5 w-3.5" />
+                  <Edit2 className="h-3.5 w-3.5 text-yellow-500" />
                 </Button>
               </div>
             )}
