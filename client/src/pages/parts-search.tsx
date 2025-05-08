@@ -19,7 +19,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { identifyPartsFromJobImages, searchPartsByImage } from '@/lib/openai';
 import { useToast } from '@/hooks/use-toast';
 import { useMapboxToken } from '@/hooks/use-mapbox-token';
-import IframeStoreMap from '@/components/map/iframe-store-map';
+import FallbackStoreMap from '@/components/map/fallback-store-map';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
 import { Button } from '@/components/ui/button';
@@ -493,7 +493,7 @@ export default function PartsSearchPage() {
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-3">Store Locations</h3>
               <div className="bg-muted rounded-lg overflow-hidden">
-                <IframeStoreMap 
+                <FallbackStoreMap 
                   stores={searchResults} 
                   selectedPartName={searchType === 'text' ? searchQuery : imageSearchResults?.query || null}
                   height="350px"
@@ -522,7 +522,7 @@ export default function PartsSearchPage() {
                   {/* Add store location map */}
                   {store.latitude && store.longitude && (
                     <div className="mb-4 border border-border rounded-md overflow-hidden">
-                      <IframeStoreMap 
+                      <FallbackStoreMap 
                         stores={[store]} 
                         selectedPartName={store.parts && store.parts[0] ? store.parts[0].name : 'Parts'}
                         height="250px"
