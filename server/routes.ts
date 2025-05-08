@@ -13,6 +13,7 @@ import {
   insertEstimateSchema
 } from "@shared/schema";
 import OpenAI from "openai";
+import { stores } from "@/lib/mock-stores";
 
 // Initialize OpenAI - this will use the OPENAI_API_KEY environment variable
 // If unavailable in development, use a default key that indicates it's missing
