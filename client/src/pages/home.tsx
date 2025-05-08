@@ -162,59 +162,78 @@ export default function Home() {
         {/* Latest Job */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Latest Job</h2>
-          <Card className="border-yellow-500/50 hover:border-yellow-500 transition-all">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Work Order #<span className="text-yellow-500 font-bold">252578</span></div>
-                  <h3 className="font-semibold text-base mb-1">Grande Deluxe</h3>
-                  <p className="text-sm mb-2">123 Business St, Houston, TX 77001</p>
-                  <div className="flex items-center">
-                    <StatusBadge jobId={1} status="in progress" size="sm" />
+          {isLoadingJobs ? (
+            <Card className="border-yellow-500/50 p-4 flex justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </Card>
+          ) : jobs && jobs.length > 0 ? (
+            <Card className="border-yellow-500/50 hover:border-yellow-500 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      Work Order #<span className="text-yellow-500 font-bold">{jobs[0].workOrderNumber}</span>
+                    </div>
+                    <h3 className="font-semibold text-base mb-1">
+                      {customers?.find(c => c.id === jobs[0].customerId)?.name || 'Customer'}
+                    </h3>
+                    <p className="text-sm mb-2">
+                      {customers?.find(c => c.id === jobs[0].customerId)?.address}, {' '}
+                      {customers?.find(c => c.id === jobs[0].customerId)?.city}, {' '}
+                      {customers?.find(c => c.id === jobs[0].customerId)?.state}
+                    </p>
+                    <div className="flex items-center">
+                      <StatusBadge jobId={jobs[0].id} status={jobs[0].status} size="sm" />
+                    </div>
                   </div>
+                  <Button variant="outline" size="icon" className="rounded-full" asChild>
+                    <Link href={`/jobs/${jobs[0].id}`}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
-                <Button variant="outline" size="icon" className="rounded-full" asChild>
-                  <Link href="/jobs/1">
-                    <ChevronRight className="h-4 w-4" />
+                
+                {/* Job Card Navigation Buttons */}
+                <div className="mt-4 grid grid-cols-5 gap-1 border-t pt-4 w-full">
+                  <Link href={`/jobs/${jobs[0].id}?tab=details`} className="block">
+                    <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
+                      <File className="h-5 w-5 mb-1 text-yellow-500" />
+                      <span className="font-medium text-[10px] whitespace-nowrap">Details</span>
+                    </button>
                   </Link>
-                </Button>
-              </div>
-              
-              {/* Job Card Navigation Buttons */}
-              <div className="mt-4 grid grid-cols-5 gap-1 border-t pt-4 w-full">
-                <Link href="/jobs/1?tab=details" className="block">
-                  <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
-                    <File className="h-5 w-5 mb-1 text-yellow-500" />
-                    <span className="font-medium text-[10px] whitespace-nowrap">Details</span>
-                  </button>
-                </Link>
-                <Link href="/jobs/1?tab=photos" className="block">
-                  <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
-                    <Camera className="h-5 w-5 mb-1 text-yellow-500" />
-                    <span className="font-medium text-[10px] whitespace-nowrap">Photos</span>
-                  </button>
-                </Link>
-                <Link href="/jobs/1?tab=notes" className="block">
-                  <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
-                    <FileText className="h-5 w-5 mb-1 text-yellow-500" />
-                    <span className="font-medium text-[10px] whitespace-nowrap">Notes</span>
-                  </button>
-                </Link>
-                <Link href="/jobs/1?tab=estimates" className="block">
-                  <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
-                    <Calculator className="h-5 w-5 mb-1 text-yellow-500" />
-                    <span className="font-medium text-[10px] whitespace-nowrap">Estimates</span>
-                  </button>
-                </Link>
-                <Link href="/jobs/1?tab=invoice" className="block">
-                  <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
-                    <Receipt className="h-5 w-5 mb-1 text-yellow-500" />
-                    <span className="font-medium text-[10px] whitespace-nowrap">Invoice</span>
-                  </button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+                  <Link href={`/jobs/${jobs[0].id}?tab=photos`} className="block">
+                    <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
+                      <Camera className="h-5 w-5 mb-1 text-yellow-500" />
+                      <span className="font-medium text-[10px] whitespace-nowrap">Photos</span>
+                    </button>
+                  </Link>
+                  <Link href={`/jobs/${jobs[0].id}?tab=notes`} className="block">
+                    <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
+                      <FileText className="h-5 w-5 mb-1 text-yellow-500" />
+                      <span className="font-medium text-[10px] whitespace-nowrap">Notes</span>
+                    </button>
+                  </Link>
+                  <Link href={`/jobs/${jobs[0].id}?tab=estimates`} className="block">
+                    <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
+                      <Calculator className="h-5 w-5 mb-1 text-yellow-500" />
+                      <span className="font-medium text-[10px] whitespace-nowrap">Estimates</span>
+                    </button>
+                  </Link>
+                  <Link href={`/jobs/${jobs[0].id}?tab=invoice`} className="block">
+                    <button className="flex flex-col items-center w-full text-xs py-2 border border-yellow-500/20 bg-yellow-500/5 hover:border-yellow-500/50 hover:bg-yellow-500/10 rounded transition-colors">
+                      <Receipt className="h-5 w-5 mb-1 text-yellow-500" />
+                      <span className="font-medium text-[10px] whitespace-nowrap">Invoice</span>
+                    </button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="text-center py-6 bg-secondary/30 rounded-lg">
+              <Clock className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
+              <h3 className="text-base font-medium">No jobs found</h3>
+            </div>
+          )}
         </div>
         
         {/* All Jobs List */}
