@@ -121,7 +121,7 @@ export default function PartsSearchPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-auto">
       <TopNavigation />
       
       <div className="container py-6 flex-1">

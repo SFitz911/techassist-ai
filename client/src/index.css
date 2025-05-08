@@ -125,8 +125,26 @@
   .page-wrapper,
   .dashboard-container,
   .map-container,
-  .job-details-container {
-    @apply overflow-y-auto;
+  .job-details-container,
+  .content-area {
+    @apply min-h-0 overflow-y-auto;
+  }
+  
+  /* Fix for mobile scrolling */
+  html, body, #root {
+    @apply h-full overflow-hidden;
+  }
+  
+  /* Component-specific fixes */
+  .tabs-container {
+    @apply flex flex-col flex-1 min-h-0;
+  }
+  
+  /* Responsive layout for filter controls */
+  @media (max-width: 640px) {
+    .filter-controls {
+      @apply flex-col items-start gap-2;
+    }
   }
   
   .navigation-bar {

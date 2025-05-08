@@ -74,7 +74,7 @@ export default function JobDetails() {
   if (!job || !customer) return null;
 
   return (
-    <div className="page-container job-details-container">
+    <div className="page-container job-details-container overflow-auto flex flex-col">
       <JobHeader job={job} customer={customer} />
       
       <Tabs 
