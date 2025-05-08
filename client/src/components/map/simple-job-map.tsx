@@ -192,7 +192,7 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
       <div ref={mapContainer} className="flex-1" />
       
       <div className="p-4 border-t bg-background">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded-full bg-yellow-500 border border-yellow-300"></div>
             <span className="text-xs">Scheduled</span>

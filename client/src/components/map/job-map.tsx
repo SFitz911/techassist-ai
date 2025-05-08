@@ -227,6 +227,24 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
           )}
         </Map>
       </div>
+      
+      {/* Add a legend for job status colors that stacks on mobile */}
+      <div className="p-4 border-t bg-background">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 rounded-full bg-yellow-500 border border-yellow-300"></div>
+            <span className="text-xs">Scheduled</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 rounded-full bg-blue-500 border border-blue-300"></div>
+            <span className="text-xs">In Progress</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-300"></div>
+            <span className="text-xs">Completed</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
