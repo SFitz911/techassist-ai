@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
@@ -6,10 +6,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import JobMap from '@/components/map/job-map';
 import TopNavigation from '@/components/layout/top-navigation';
 import { apiRequest } from '@/lib/queryClient';
+import { Button } from '@/components/ui/button';
+import { MapPin, Calendar, FilterX } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 export default function MapPage() {
   const [, setLocation] = useLocation();
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
   // Fetch jobs
   const { data: jobs, isLoading: loadingJobs, error: jobsError } = useQuery({
@@ -21,6 +24,14 @@ export default function MapPage() {
   const { data: customers, isLoading: loadingCustomers, error: customersError } = useQuery({
     queryKey: ['/api/customers'],
     queryFn: async () => apiRequest('/api/customers'),
+  });
+  
+  // Apply filters to jobs
+  const filteredJobs = jobs?.filter((job) => {
+    // No filter applied
+    if (!statusFilter) return true;
+    // Apply status filter
+    return job.status.toLowerCase() === statusFilter.toLowerCase();
   });
   
   // Redirect if there's an error
@@ -61,11 +72,69 @@ export default function MapPage() {
     );
   }
   
+  // Get count of each status type
+  const statusCounts = jobs?.reduce((acc, job) => {
+    const status = job.status.toLowerCase();
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>) || {};
+
   return (
     <div className="flex flex-col h-screen">
       <TopNavigation />
+      
+      {/* Filter controls */}
+      <div className="border-b bg-slate-900 p-3">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-medium text-slate-200">Filter Jobs by Status:</h2>
+          {statusFilter && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setStatusFilter(null)}
+              className="h-8 px-2 text-yellow-500 hover:text-yellow-400"
+            >
+              <FilterX className="h-4 w-4 mr-1" />
+              Clear Filter
+            </Button>
+          )}
+        </div>
+        
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <Button
+            variant={statusFilter === 'scheduled' ? 'default' : 'outline'}
+            size="sm"
+            className={`h-8 ${statusFilter === 'scheduled' ? 'bg-yellow-500 hover:bg-yellow-600 text-black' : 'border-yellow-500/50 text-yellow-500 hover:text-yellow-400'}`}
+            onClick={() => setStatusFilter(statusFilter === 'scheduled' ? null : 'scheduled')}
+          >
+            <Calendar className="h-4 w-4 mr-1" />
+            Scheduled ({statusCounts['scheduled'] || 0})
+          </Button>
+          
+          <Button
+            variant={statusFilter === 'in progress' ? 'default' : 'outline'}
+            size="sm"
+            className={`h-8 ${statusFilter === 'in progress' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'border-blue-500/50 text-blue-500 hover:text-blue-400'}`}
+            onClick={() => setStatusFilter(statusFilter === 'in progress' ? null : 'in progress')}
+          >
+            <MapPin className="h-4 w-4 mr-1" />
+            In Progress ({statusCounts['in progress'] || 0})
+          </Button>
+          
+          <Button
+            variant={statusFilter === 'completed' ? 'default' : 'outline'}
+            size="sm"
+            className={`h-8 ${statusFilter === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white' : 'border-green-500/50 text-green-500 hover:text-green-400'}`}
+            onClick={() => setStatusFilter(statusFilter === 'completed' ? null : 'completed')}
+          >
+            <MapPin className="h-4 w-4 mr-1" />
+            Completed ({statusCounts['completed'] || 0})
+          </Button>
+        </div>
+      </div>
+      
       <div className="flex-1">
-        <JobMap jobs={jobs} customers={customers} />
+        <JobMap jobs={filteredJobs || []} customers={customers} />
       </div>
     </div>
   );

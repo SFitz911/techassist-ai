@@ -150,8 +150,13 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
               onClick={() => handleMarkerClick(jobData)}
               style={{ cursor: 'pointer' }}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${getStatusColor(jobData.job.status)}`}>
-                <MapPin className="h-5 w-5" />
+              <div 
+                className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'animate-pulse w-10 h-10' : 'w-8 h-8'} 
+                            rounded-full flex items-center justify-center text-white 
+                            ${getStatusColor(jobData.job.status)} 
+                            transition-all duration-300 transform hover:scale-110`}
+              >
+                <MapPin className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'h-6 w-6' : 'h-5 w-5'}`} />
               </div>
             </Marker>
           ))}
@@ -175,7 +180,14 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                       </CardTitle>
                       <CardDescription>{selectedJob.customer.name}</CardDescription>
                     </div>
-                    <Badge variant={selectedJob.job.status.toLowerCase() === 'completed' ? 'default' : 'outline'}>
+                    <Badge 
+                      className={`
+                        ${selectedJob.job.status.toLowerCase() === 'scheduled' ? 'bg-yellow-900/30 text-yellow-500 border-yellow-500/50' : ''}
+                        ${selectedJob.job.status.toLowerCase() === 'in progress' ? 'bg-blue-900/30 text-blue-500 border-blue-500/50' : ''}
+                        ${selectedJob.job.status.toLowerCase() === 'completed' ? 'bg-green-900/30 text-green-500 border-green-500/50' : ''}
+                        border px-3
+                      `}
+                    >
                       {selectedJob.job.status}
                     </Badge>
                   </div>
