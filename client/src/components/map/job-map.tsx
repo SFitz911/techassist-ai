@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Link } from 'wouter';
-import { MapPin, Home, Calendar, Clock, ArrowRight } from 'lucide-react';
+import { MapPin, Home, Calendar, Clock, ArrowRight, Phone, Navigation } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -200,6 +200,10 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-green-500" />
+                    <span>{selectedJob.customer.phone || '(555) 123-4567'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-purple-500" />
                     <span>{formatDate(selectedJob.job.scheduled)}</span>
                   </div>
@@ -208,7 +212,7 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                     <span>{selectedJob.job.timeZone || 'Default timezone'}</span>
                   </div>
                 </CardContent>
-                <CardFooter className="p-3 pt-0">
+                <CardFooter className="p-3 pt-0 flex flex-col gap-2">
                   <Button 
                     asChild 
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-0"
@@ -220,6 +224,21 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                         <ArrowRight className="h-4 w-4" />
                       </span>
                     </Link>
+                  </Button>
+                  
+                  <Button 
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-0"
+                    onClick={() => {
+                      const address = `${selectedJob.customer.address}, ${selectedJob.customer.city}, ${selectedJob.customer.state} ${selectedJob.customer.zip}`;
+                      const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+                      window.open(url, '_blank');
+                    }}
+                  >
+                    <span className="flex items-center justify-center gap-1">
+                      Get Directions
+                      <Navigation className="h-4 w-4" />
+                    </span>
                   </Button>
                 </CardFooter>
               </Card>
