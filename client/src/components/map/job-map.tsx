@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Link } from 'wouter';
-import { MapPin, Home, Calendar, Clock, ArrowRight, Phone, Navigation } from 'lucide-react';
+import { MapPin, Home, Calendar, Clock, ArrowRight, Phone, Navigation, Mail, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -201,7 +201,21 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-green-500" />
-                    <span>{selectedJob.customer.phone || '(555) 123-4567'}</span>
+                    <a 
+                      href={`tel:${selectedJob.customer.phone || '5551234567'}`} 
+                      className="hover:underline text-green-500"
+                    >
+                      {selectedJob.customer.phone || '(555) 123-4567'}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-blue-500" />
+                    <a 
+                      href={`mailto:${selectedJob.customer.email || 'contact@example.com'}`} 
+                      className="hover:underline text-blue-500"
+                    >
+                      {selectedJob.customer.email || 'contact@example.com'}
+                    </a>
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-purple-500" />
@@ -213,6 +227,36 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                   </div>
                 </CardContent>
                 <CardFooter className="p-3 pt-0 flex flex-col gap-2">
+                  <div className="grid grid-cols-2 gap-2 w-full mb-2">
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-500/50 text-blue-500 hover:bg-blue-500/10"
+                      onClick={() => {
+                        if (selectedJob.customer.phone) {
+                          window.open(`sms:${selectedJob.customer.phone.replace(/[^\d+]/g, '')}`, '_blank');
+                        }
+                      }}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-1" />
+                      Text
+                    </Button>
+                  
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="border-green-500/50 text-green-500 hover:bg-green-500/10"
+                      onClick={() => {
+                        if (selectedJob.customer.phone) {
+                          window.location.href = `tel:${selectedJob.customer.phone.replace(/[^\d+]/g, '')}`;
+                        }
+                      }}
+                    >
+                      <Phone className="h-4 w-4 mr-1" />
+                      Call
+                    </Button>
+                  </div>
+                  
                   <Button 
                     asChild 
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-0"
