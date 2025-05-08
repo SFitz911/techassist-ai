@@ -38,8 +38,12 @@ export default function TopNavigation() {
       <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-4 md:px-6 shadow-sm">
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="md:hidden border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10"
+            >
+              <Menu className="h-5 w-5 text-yellow-500" />
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
@@ -88,7 +92,16 @@ export default function TopNavigation() {
             </span>
           </div>
         </Link>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
+          <Link href="/map">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10 hidden sm:flex"
+            >
+              <Map className="h-5 w-5 text-yellow-500" />
+            </Button>
+          </Link>
           <Avatar className="h-8 w-8">
             <AvatarImage src="" alt="User" />
             <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>

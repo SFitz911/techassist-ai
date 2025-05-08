@@ -6,9 +6,9 @@ export default function BottomNavigation() {
   
   const navItems = [
     { path: "/", icon: Home, label: "Home" },
+    { path: "/dashboard", icon: FileText, label: "Jobs" },
     { path: "/map", icon: Map, label: "Map" },
-    { path: "/photos", icon: Camera, label: "Photos" },
-    { path: "/notes", icon: FileText, label: "Notes" },
+    { path: "/parts-search", icon: Camera, label: "Parts" },
     { path: "/invoice", icon: Receipt, label: "Invoice" },
   ];
   
