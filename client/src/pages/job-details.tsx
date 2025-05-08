@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JobHeader from "@/components/layout/job-header";
 import NavigationBar from "@/components/layout/navigation-bar";
@@ -17,16 +17,18 @@ export default function JobDetails() {
   const [match, params] = useRoute("/jobs/:id");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   // Check URL for tab parameter
   const searchParams = new URLSearchParams(window.location.search);
   const initialTab = searchParams.get('tab') || "details";
   const [activeTab, setActiveTab] = useState(initialTab);
   
-  // Get job details
+  // Setup polling for job details to catch status changes
   const { data: job, isLoading: isLoadingJob } = useQuery({
     queryKey: [`/api/jobs/${params?.id}`],
     retry: false,
+    refetchInterval: 2000 // Poll every 2 seconds to catch status updates from other components
   });
   
   // Get customer details
@@ -35,6 +37,12 @@ export default function JobDetails() {
     enabled: !!job?.customerId,
     retry: false,
   });
+  
+  // Handle status changes in this component
+  const handleStatusChange = (newStatus: string) => {
+    // Force refetch job data
+    queryClient.invalidateQueries({ queryKey: [`/api/jobs/${params?.id}`] });
+  };
   
   // If job not found, redirect back
   useEffect(() => {
@@ -75,7 +83,11 @@ export default function JobDetails() {
 
   return (
     <div className="page-container job-details-container overflow-auto flex flex-col">
-      <JobHeader job={job} customer={customer} />
+      <JobHeader 
+        job={job} 
+        customer={customer} 
+        onStatusChange={handleStatusChange}
+      />
       
       <Tabs 
         value={activeTab} 

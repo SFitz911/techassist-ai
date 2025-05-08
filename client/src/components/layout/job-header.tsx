@@ -16,9 +16,10 @@ interface JobHeaderProps {
     city?: string;
     state?: string;
   };
+  onStatusChange?: (newStatus: string) => void;
 }
 
-export default function JobHeader({ job, customer }: JobHeaderProps) {
+export default function JobHeader({ job, customer, onStatusChange }: JobHeaderProps) {
   const [, setLocation] = useLocation();
 
   return (
@@ -37,7 +38,12 @@ export default function JobHeader({ job, customer }: JobHeaderProps) {
             <h1 className="text-lg font-semibold">{customer.name}</h1>
             <div className="ml-2">
               {job.id ? (
-                <StatusBadge jobId={job.id} status={job.status} size="sm" />
+                <StatusBadge 
+                  jobId={job.id} 
+                  status={job.status} 
+                  size="sm" 
+                  onStatusChange={onStatusChange}
+                />
               ) : (
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border 
                   ${job.status === 'scheduled' ? 'bg-yellow-900/30 text-yellow-500 border-yellow-500/50' : 
