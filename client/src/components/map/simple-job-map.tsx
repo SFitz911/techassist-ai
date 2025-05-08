@@ -176,11 +176,26 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
         maxWidth: '320px' // Make popup wider
       }).setDOMContent(popupContent);
       
-      // Create a marker
-      new mapboxgl.Marker(markerEl)
+      // Create a marker with click event handling
+      const marker = new mapboxgl.Marker(markerEl)
         .setLngLat(job.coordinates)
         .setPopup(popup)
         .addTo(map.current!);
+        
+      // Add click handler to recenter map when marker is clicked
+      markerEl.addEventListener('click', () => {
+        if (!map.current) return;
+        
+        // Calculate an offset to position the marker in the upper portion of the map
+        // This ensures the popup appears fully visible below the marker
+        map.current.flyTo({
+          center: job.coordinates,
+          offset: [0, -150], // Offset to move marker to upper portion
+          zoom: 14,
+          speed: 1,
+          essential: true
+        });
+      });
       
       // Extend bounds to include this marker
       bounds.extend(job.coordinates);
