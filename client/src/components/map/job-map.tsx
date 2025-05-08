@@ -1,13 +1,18 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { Link } from 'wouter';
 import { MapPin, Home, Calendar, Clock, ArrowRight, Phone, Navigation, Mail, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Customer, Job } from '@shared/schema';
-import { Map, NavigationControl, FullscreenControl, Marker, Popup } from 'react-map-gl';
 import { useMapboxToken } from '@/hooks/use-mapbox-token';
+
+// Import Mapbox CSS
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+// Import from mapbox subpath for newer react-map-gl v8
+import Map from 'react-map-gl/mapbox';
+import { Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl/mapbox';
 
 // Define a type for combined job data
 type JobWithCustomer = {
@@ -93,9 +98,10 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
   }, []);
   
   // Format date for display
-  const formatDate = (dateString: string | null) => {
+  const formatDate = (dateString: string | Date | null) => {
     if (!dateString) return 'Not scheduled';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+    return date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric'
@@ -118,6 +124,12 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
     }
   };
   
+  console.log("JobMap rendering with token:", { 
+    hasToken: !!mapboxToken, 
+    isTokenLoading, 
+    jobsCount: jobsWithData.length 
+  });
+  
   return (
     <div className="h-full w-full flex flex-col">
       <div className="px-4 py-3 border-b bg-gradient-to-r from-slate-900 to-slate-800">
@@ -138,27 +150,31 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
         ) : mapboxToken ? (
           <Map
             {...viewState}
-            onMove={(evt: any) => setViewState(evt.viewState)}
+            onMove={(evt) => setViewState(evt.viewState)}
             mapStyle="mapbox://styles/mapbox/dark-v11"
             mapboxAccessToken={mapboxToken}
             style={{ width: '100%', height: '100%' }}
+            attributionControl={false}
           >
-            <NavigationControl position="top-right" />
-            <FullscreenControl position="top-right" />
+            <NavigationControl />
+            <FullscreenControl />
             
             {jobsWithData.map((jobData) => (
               <Marker
                 key={jobData.job.id}
                 longitude={jobData.coordinates[0]}
                 latitude={jobData.coordinates[1]}
-                onClick={() => handleMarkerClick(jobData)}
-                style={{ cursor: 'pointer' }}
+                onClick={(e) => {
+                  // Prevent click from propagating to the map
+                  e.originalEvent.stopPropagation();
+                  handleMarkerClick(jobData);
+                }}
               >
                 <div 
                   className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'animate-pulse w-10 h-10' : 'w-8 h-8'} 
                               rounded-full flex items-center justify-center text-white 
                               ${getStatusColor(jobData.job.status)} 
-                              transition-all duration-300 transform hover:scale-110`}
+                              transition-all duration-300 transform hover:scale-110 cursor-pointer`}
                 >
                   <MapPin className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'h-6 w-6' : 'h-5 w-5'}`} />
                 </div>
@@ -169,11 +185,9 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
               <Popup
                 longitude={selectedJob.coordinates[0]}
                 latitude={selectedJob.coordinates[1]}
-                anchor="bottom"
                 closeOnClick={false}
                 onClose={() => setSelectedJob(null)}
-                maxWidth="300px"
-                className="custom-popup"
+                className="custom-popup-content w-64"
               >
                 <Card className="w-full border-0 shadow-none">
                   <CardHeader className="p-3 pb-2">

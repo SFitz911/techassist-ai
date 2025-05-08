@@ -509,10 +509,8 @@ export default function PartsSearchPage() {
                     {store.latitude && store.longitude && (
                       <div className="mb-4 border border-border rounded-md overflow-hidden">
                         <StoreLocationMap 
-                          storeName={store.name}
-                          latitude={store.latitude}
-                          longitude={store.longitude}
-                          className="h-48 w-full"
+                          stores={[store]} 
+                          selectedPartName={store.parts && store.parts[0] ? store.parts[0].name : 'Parts'}
                         />
                       </div>
                     )}
