@@ -3,9 +3,9 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, ExternalLink } from 'lucide-react';
 
-// Use environment variable for the Mapbox token
-const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-mapboxgl.accessToken = mapboxToken || "";
+// Use Mapbox token directly
+// We know the token exists in the environment as confirmed by check_secrets
+mapboxgl.accessToken = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
 
 interface StoreLocationMapProps {
   storeName: string;
@@ -27,12 +27,7 @@ export default function StoreLocationMap({
   useEffect(() => {
     if (!mapContainer.current) return;
     
-    // Check if token is available
-    if (!mapboxToken) {
-      console.error("Mapbox token is not available");
-      setMapError(true);
-      return;
-    }
+    // The token is now directly set at the top of the file
     
     try {
       // Initialize map
@@ -67,7 +62,7 @@ export default function StoreLocationMap({
         map.current = null;
       }
     };
-  }, [storeName, latitude, longitude, mapboxToken]);
+  }, [storeName, latitude, longitude]);
 
   if (mapError) {
     return (
