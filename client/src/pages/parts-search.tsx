@@ -12,13 +12,15 @@ import {
   Camera,
   Upload,
   FileImage,
-  Sparkles
+  Sparkles,
+  Map
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { identifyPartsFromJobImages, searchPartsByImage } from '@/lib/openai';
 import { useToast } from '@/hooks/use-toast';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
+import StoreLocationMap from '@/components/map/store-location-map';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -42,12 +44,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 export default function PartsSearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [jobId, setJobId] = useState<string>('');
-  const [selectedParts, setSelectedParts] = useState<Map<number, any>>(new Map());
+  const [selectedParts, setSelectedParts] = useState<Record<number, { added: boolean }>>({});
   const [searchType, setSearchType] = useState<'text' | 'image'>('text');
   const [imageData, setImageData] = useState<string | null>(null);
   const [aiGeneratedQuery, setAiGeneratedQuery] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  
+  // Rename Map icon to avoid conflict with JavaScript Map object
+  const MapIcon = Map;
 
   // Get available jobs for the dropdown
   const { data: jobs } = useQuery({
@@ -148,7 +153,7 @@ export default function PartsSearchPage() {
       
       // Update UI to show item was added
       const partKey = part.id;
-      setSelectedParts(new Map(selectedParts.set(partKey, {...part, added: true})));
+      setSelectedParts({...selectedParts, [partKey]: {...part, added: true}});
       
       toast({
         title: 'Part added to estimate',
@@ -255,7 +260,7 @@ export default function PartsSearchPage() {
 
   // Check if a part has been added to the estimate
   const isPartAdded = (partId: number) => {
-    return selectedParts.has(partId) && selectedParts.get(partId).added;
+    return !!selectedParts[partId]?.added;
   };
 
   return (
