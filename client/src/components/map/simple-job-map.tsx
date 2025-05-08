@@ -7,9 +7,8 @@ import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import { Customer, Job } from '@shared/schema';
 
-// Mapbox token - in a real application, this should be an environment variable
-// Using a public token that should work for development/testing
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+// Mapbox token using the project's access token
+const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2ZpdHo5MTEiLCJhIjoiY21hZjJocGcyMDEzbDJrbzdxMzZleTM2eSJ9.pwYUN6WMF5T0yC54B1qsUw';
 
 // Configure mapbox
 mapboxgl.accessToken = MAPBOX_TOKEN;

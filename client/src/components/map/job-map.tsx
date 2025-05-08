@@ -16,7 +16,7 @@ type JobWithCustomer = {
 };
 
 // Use the Mapbox token directly
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2ZpdHo5MTEiLCJhIjoiY205bnMwanpxMHF6eTJpcHRuZDY0OHIxaSJ9.yjpiLIPh4aWmSSJhszviTw';
+const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2ZpdHo5MTEiLCJhIjoiY21hZjJocGcyMDEzbDJrbzdxMzZleTM2eSJ9.pwYUN6WMF5T0yC54B1qsUw';
 
 interface JobMapProps {
   jobs: Job[];
