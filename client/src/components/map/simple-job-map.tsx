@@ -1,82 +1,40 @@
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { Link } from 'wouter';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Link } from 'wouter';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MapPin, Phone, Navigation } from 'lucide-react';
+import { useMapboxToken } from '@/hooks/use-mapbox-token';
 import { Customer, Job } from '@shared/schema';
 
-// Mapbox token using the project's access token
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2ZpdHo5MTEiLCJhIjoiY21hZjJocGcyMDEzbDJrbzdxMzZleTM2eSJ9.pwYUN6WMF5T0yC54B1qsUw';
-
-// Configure mapbox
-mapboxgl.accessToken = MAPBOX_TOKEN;
-
-// Define types
-type JobWithLocation = {
-  id: number;
-  workOrderNumber: string;
-  customerId: number;
-  status: string;
-  coordinates: [number, number];
-  customer: Customer;
-};
-
-interface JobMapProps {
+interface SimpleJobMapProps {
   jobs: Job[];
   customers: Customer[];
+  height?: string;
 }
 
-export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
+export default function SimpleJobMap({ 
+  jobs, 
+  customers,
+  height = '500px' 
+}: SimpleJobMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [jobsWithLocations, setJobsWithLocations] = useState<JobWithLocation[]>([]);
+  const { token: mapboxToken, isLoading: isTokenLoading } = useMapboxToken();
   
-  // Process jobs data
   useEffect(() => {
-    if (!jobs || !customers) return;
+    if (isTokenLoading || !mapboxToken || !mapContainer.current || map.current) return;
     
-    const processedJobs = jobs.map(job => {
-      const customer = customers.find(c => c.id === job.customerId);
-      if (!customer) return null;
-      
-      // In a real app, you would get coordinates from a geocoding service
-      // For this demo, we'll use random coordinates around Houston
-      const baseLatitude = 29.7604;
-      const baseLongitude = -95.3698;
-      
-      // Add small random offset to create different points
-      const randomLat = baseLatitude + (Math.random() * 0.1 - 0.05);
-      const randomLng = baseLongitude + (Math.random() * 0.1 - 0.05);
-      
-      return {
-        id: job.id,
-        workOrderNumber: job.workOrderNumber,
-        customerId: job.customerId,
-        status: job.status,
-        coordinates: [randomLng, randomLat] as [number, number],
-        customer
-      };
-    }).filter(Boolean) as JobWithLocation[];
-    
-    setJobsWithLocations(processedJobs);
-  }, [jobs, customers]);
-  
-  // Initialize map
-  useEffect(() => {
-    if (!mapContainer.current || map.current) return;
-    
+    // Initialize map
+    mapboxgl.accessToken = mapboxToken;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11',
-      center: [-95.3698, 29.7604], // Houston, TX
+      center: [-95.3698, 29.7604], // Default center (Houston)
       zoom: 10
     });
     
-    // Add controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl());
+    map.current.addControl(new mapboxgl.FullscreenControl());
     
     // Clean up on unmount
     return () => {
@@ -85,145 +43,217 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
         map.current = null;
       }
     };
-  }, []);
+  }, [mapboxToken, isTokenLoading]);
   
-  // Add markers for jobs
+  // Add markers when jobs, customers or map changes
   useEffect(() => {
-    if (!map.current || !jobsWithLocations.length) return;
+    if (!map.current || !jobs.length || !customers.length) return;
     
-    // Remove existing markers
+    // Clear existing markers (the DOM elements persist otherwise)
     const markers = document.querySelectorAll('.mapboxgl-marker');
     markers.forEach(marker => marker.remove());
     
-    // Fit map to bounds of all markers
+    // Calculate bounds for jobs
     const bounds = new mapboxgl.LngLatBounds();
     
-    // Add markers for each job
-    jobsWithLocations.forEach(job => {
-      // Create a marker element
-      const markerEl = document.createElement('div');
-      markerEl.className = 'custom-marker';
+    // Process jobs with customer data
+    const jobsWithData = jobs.map(job => {
+      const customer = customers.find(c => c.id === job.customerId);
+      if (!customer) return null;
       
-      // Add appropriate styling based on status
-      const baseClasses = 'rounded-full flex items-center justify-center text-white border-2';
-      let statusClasses = '';
+      // Generate map coordinates from address
+      // In a real app, this would use geocoding, but we'll simulate with random coordinates around Houston
+      const baseLatitude = 29.7604;
+      const baseLongitude = -95.3698;
       
-      switch(job.status.toLowerCase().replace('_', ' ')) {
+      // Add small random offset to create different points
+      const randomLat = baseLatitude + (Math.random() * 0.1 - 0.05);
+      const randomLng = baseLongitude + (Math.random() * 0.1 - 0.05);
+      
+      return {
+        job,
+        customer,
+        coordinates: [randomLng, randomLat] as [number, number]
+      };
+    }).filter(Boolean);
+    
+    // Format date for display
+    const formatDate = (dateString: string | Date | null) => {
+      if (!dateString) return 'Not scheduled';
+      const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      });
+    };
+    
+    // Get color based on job status
+    const getStatusColor = (status: string) => {
+      switch (status.toLowerCase().replace('_', ' ')) {
         case 'scheduled':
-          statusClasses = 'bg-yellow-500 border-yellow-300';
-          break;
+          return '#eab308'; // yellow-500
         case 'in progress':
-          statusClasses = 'bg-blue-500 border-blue-300';
-          markerEl.classList.add('animate-pulse');
-          break;
+          return '#3b82f6'; // blue-500
         case 'completed':
-          statusClasses = 'bg-green-500 border-green-300';
-          break;
+          return '#22c55e'; // green-500
+        case 'canceled':
+          return '#ef4444'; // red-500
         default:
-          statusClasses = 'bg-slate-500 border-slate-300';
+          return '#64748b'; // slate-500
+      }
+    };
+    
+    // Add markers for each job
+    jobsWithData.forEach(jobData => {
+      const { job, customer, coordinates } = jobData;
+      
+      // Add job to bounds
+      bounds.extend(coordinates);
+      
+      // Create custom marker element
+      const markerEl = document.createElement('div');
+      markerEl.className = 'job-marker';
+      markerEl.style.width = job.status.toLowerCase() === 'in progress' ? '40px' : '32px';
+      markerEl.style.height = job.status.toLowerCase() === 'in progress' ? '40px' : '32px';
+      markerEl.style.borderRadius = '50%';
+      markerEl.style.background = getStatusColor(job.status);
+      markerEl.style.border = '2px solid ' + getStatusColor(job.status).replace(')', ', 0.5)').replace('rgb', 'rgba');
+      markerEl.style.display = 'flex';
+      markerEl.style.justifyContent = 'center';
+      markerEl.style.alignItems = 'center';
+      markerEl.style.color = 'white';
+      markerEl.style.cursor = 'pointer';
+      markerEl.style.zIndex = '10';
+      
+      // Add pulsing animation for in-progress jobs
+      if (job.status.toLowerCase() === 'in progress') {
+        markerEl.style.animation = 'pulse 2s infinite';
+        const styleSheet = document.createElement('style');
+        styleSheet.innerText = `
+          @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+          }
+        `;
+        document.head.appendChild(styleSheet);
       }
       
-      // Style the marker
-      markerEl.className = `custom-marker ${baseClasses} ${statusClasses}`;
+      markerEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${job.status.toLowerCase() === 'in progress' ? '24' : '20'}" height="${job.status.toLowerCase() === 'in progress' ? '24' : '20'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
       
-      // Add a pin icon
-      const icon = document.createElement('span');
-      icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
-      markerEl.appendChild(icon);
-      
-      // Create the popup content
-      const popupContent = document.createElement('div');
-      popupContent.className = 'custom-popup-content';
-      
-      // Add job info to popup with status badge
-      popupContent.innerHTML = `
-        <div class="popup-header">
-          <div class="flex justify-between items-start mb-1">
-            <h3>Work Order #<span class="text-yellow-500 font-bold">${job.workOrderNumber}</span></h3>
-            <span class="status-badge status-${job.status.toLowerCase().replace(' ', '-')}">
+      // Create popup with job info
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <div style="font-family: system-ui, sans-serif; min-width: 240px; max-width: 300px;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <div>
+              <div style="font-weight: 500; margin-bottom: 4px; font-size: 16px;">
+                Work Order <span style="color: #eab308; font-weight: 700;">#${job.workOrderNumber}</span>
+              </div>
+              <div style="color: #888; margin-bottom: 4px; font-size: 14px;">${customer.name}</div>
+            </div>
+            <div style="
+              background: ${job.status.toLowerCase() === 'scheduled' ? 'rgba(234, 179, 8, 0.2)' : 
+                          job.status.toLowerCase() === 'in progress' ? 'rgba(59, 130, 246, 0.2)' : 
+                          job.status.toLowerCase() === 'completed' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(100, 116, 139, 0.2)'};
+              color: ${getStatusColor(job.status)};
+              border: 1px solid ${getStatusColor(job.status).replace(')', ', 0.5)').replace('rgb', 'rgba')};
+              border-radius: 4px;
+              padding: 2px 8px;
+              font-size: 12px;
+              white-space: nowrap;
+            ">
               ${job.status}
-            </span>
+            </div>
           </div>
-          <p>${job.customer.name}</p>
-        </div>
-        <div class="popup-content">
-          <div class="popup-address">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <p>${job.customer.address}, ${job.customer.city}, ${job.customer.state}</p>
+          
+          <div style="margin-bottom: 6px; font-size: 14px; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            ${customer.address}, ${customer.city}, ${customer.state} ${customer.zip || ''}
           </div>
-          <div class="popup-phone">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            <p>${job.customer.phone || '(555) 123-4567'}</p>
+          
+          <div style="margin-bottom: 6px; font-size: 14px; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <a href="tel:${customer.phone || ''}" style="color: #22c55e; text-decoration: none;">
+              ${customer.phone || 'No phone'}
+            </a>
+          </div>
+          
+          <div style="margin-bottom: 6px; font-size: 14px; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+            <a href="mailto:${customer.email || ''}" style="color: #3b82f6; text-decoration: none;">
+              ${customer.email || 'No email'}
+            </a>
+          </div>
+          
+          <div style="margin-bottom: 6px; font-size: 14px; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+            ${formatDate(job.scheduled)}
+          </div>
+          
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <a 
+              href="/jobs/${job.id}" 
+              style="background: linear-gradient(to right, #2563eb, #1d4ed8); flex: 1; color: white; border: none; border-radius: 4px; padding: 6px 0; font-size: 14px; text-decoration: none; display: inline-block; text-align: center;"
+            >
+              View Details
+            </a>
+            
+            <a 
+              href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${customer.address}, ${customer.city}, ${customer.state} ${customer.zip || ''}`)}" 
+              target="_blank" 
+              style="background: linear-gradient(to right, #16a34a, #15803d); flex: 1; color: white; border: none; border-radius: 4px; padding: 6px 0; font-size: 14px; text-decoration: none; display: inline-block; text-align: center;"
+            >
+              Get Directions
+            </a>
           </div>
         </div>
-        <div class="popup-footer">
-          <a href="/jobs/${job.id}" class="view-details-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-            View Job Details
-          </a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${job.customer.address}, ${job.customer.city}, ${job.customer.state}`)}" class="get-directions-btn" target="_blank">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
-            Get Directions
-          </a>
-        </div>
-      `;
+      `);
       
-      // Create a popup with more space
-      const popup = new mapboxgl.Popup({
-        offset: 25,
-        closeButton: true,
-        className: 'custom-popup',
-        maxWidth: '320px' // Make popup wider
-      }).setDOMContent(popupContent);
-      
-      // Create a marker with click event handling
-      const marker = new mapboxgl.Marker(markerEl)
-        .setLngLat(job.coordinates)
+      // Add marker with popup
+      new mapboxgl.Marker(markerEl)
+        .setLngLat(coordinates)
         .setPopup(popup)
         .addTo(map.current!);
-        
-      // Add click handler to recenter map when marker is clicked
-      markerEl.addEventListener('click', () => {
-        if (!map.current) return;
-        
-        // Calculate an offset to position the marker in the upper portion of the map
-        // This ensures the popup appears fully visible below the marker
-        map.current.flyTo({
-          center: job.coordinates,
-          offset: [0, -150], // Offset to move marker to upper portion
-          zoom: 14,
-          speed: 1,
-          essential: true
-        });
-      });
-      
-      // Extend bounds to include this marker
-      bounds.extend(job.coordinates);
     });
     
-    // Fit the map to show all markers
+    // Fit bounds if we have jobs
     if (!bounds.isEmpty()) {
       map.current.fitBounds(bounds, {
         padding: 50,
-        maxZoom: 13
+        maxZoom: 12
       });
     }
-  }, [jobsWithLocations, map.current]);
+  }, [jobs, customers, map.current]);
   
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className="w-full h-full flex flex-col">
       <div className="px-4 py-3 border-b bg-gradient-to-r from-slate-900 to-slate-800">
         <h1 className="text-xl font-bold flex items-center">
-          <MapPin className="h-5 w-5 mr-2 text-yellow-500" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2 text-yellow-500"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
           Job Map
         </h1>
         <p className="text-sm text-amber-500 font-medium mt-1">
-          {jobsWithLocations.length} job{jobsWithLocations.length !== 1 ? 's' : ''} on the map
+          {jobs.length} job{jobs.length !== 1 ? 's' : ''} on the map
         </p>
       </div>
       
-      <div ref={mapContainer} className="flex-1" />
+      <div className="flex-1 relative">
+        {isTokenLoading ? (
+          <div className="h-full w-full flex items-center justify-center bg-muted">
+            <p className="text-muted-foreground">Loading map...</p>
+          </div>
+        ) : mapboxToken ? (
+          <div ref={mapContainer} style={{ height: '100%', width: '100%' }} />
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center bg-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2 text-muted-foreground"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <p className="text-sm text-muted-foreground">Map not available - API token missing</p>
+          </div>
+        )}
+      </div>
       
+      {/* Add a legend for job status colors */}
       <div className="p-3 border-t bg-background">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1">
@@ -240,158 +270,6 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
           </div>
         </div>
       </div>
-      
-      <style>{`
-        .custom-marker {
-          width: 32px;
-          height: 32px;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        
-        .custom-marker:hover {
-          transform: scale(1.1);
-        }
-        
-        .animate-pulse {
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
-        }
-        
-        .custom-popup .mapboxgl-popup-content {
-          background: #0f172a;
-          color: white;
-          border-radius: 8px;
-          border: 1px solid #334155;
-          padding: 0;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .custom-popup .mapboxgl-popup-close-button {
-          color: #94a3b8;
-          font-size: 16px;
-          padding: 4px;
-        }
-        
-        .custom-popup .mapboxgl-popup-close-button:hover {
-          color: white;
-          background: none;
-        }
-        
-        .popup-header {
-          padding: 12px 16px 8px;
-          border-bottom: 1px solid #1e293b;
-        }
-        
-        .popup-header h3 {
-          font-size: 14px;
-          font-weight: 500;
-          margin: 0 0 4px;
-        }
-        
-        .popup-header p {
-          font-size: 12px;
-          color: #94a3b8;
-          margin: 0;
-        }
-        
-        .popup-content {
-          padding: 8px 16px;
-        }
-        
-        .popup-content p {
-          font-size: 12px;
-          margin: 6px 0;
-        }
-        
-        .popup-address, .popup-phone {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          margin-bottom: 6px;
-        }
-        
-        .icon {
-          flex-shrink: 0;
-        }
-        
-        .popup-footer {
-          padding: 8px 16px 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        
-        .view-details-btn, .get-directions-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          text-align: center;
-          font-size: 12px;
-          font-weight: 500;
-          padding: 6px 12px;
-          border-radius: 4px;
-          text-decoration: none;
-        }
-        
-        .view-details-btn {
-          background: linear-gradient(to right, #2563eb, #1d4ed8);
-          color: white;
-        }
-        
-        .view-details-btn:hover {
-          background: linear-gradient(to right, #1d4ed8, #1e40af);
-        }
-        
-        .get-directions-btn {
-          background: linear-gradient(to right, #22c55e, #16a34a);
-          color: white;
-        }
-        
-        .get-directions-btn:hover {
-          background: linear-gradient(to right, #16a34a, #15803d);
-        }
-        
-        /* Status badge styles */
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 3px 8px;
-          border-radius: 12px;
-          font-size: 10px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-        
-        .status-scheduled {
-          background-color: rgba(234, 179, 8, 0.2);
-          color: #eab308;
-          border: 1px solid rgba(234, 179, 8, 0.4);
-        }
-        
-        .status-in-progress {
-          background-color: rgba(59, 130, 246, 0.2);
-          color: #3b82f6;
-          border: 1px solid rgba(59, 130, 246, 0.4);
-        }
-        
-        .status-completed {
-          background-color: rgba(34, 197, 94, 0.2);
-          color: #22c55e;
-          border: 1px solid rgba(34, 197, 94, 0.4);
-        }
-      `}</style>
     </div>
   );
 }
