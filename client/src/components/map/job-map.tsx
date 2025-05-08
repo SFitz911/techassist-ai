@@ -59,7 +59,7 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
     if (jobsWithData.length === 0) return;
     
     const bounds = jobsWithData.reduce(
-      (acc, jobData) => {
+      (acc: any, jobData) => {
         const [lng, lat] = jobData.coordinates;
         return {
           minLng: Math.min(acc.minLng, lng),
@@ -138,161 +138,161 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
         ) : mapboxToken ? (
           <Map
             {...viewState}
-            onMove={evt => setViewState(evt.viewState)}
+            onMove={(evt: any) => setViewState(evt.viewState)}
             mapStyle="mapbox://styles/mapbox/dark-v11"
             mapboxAccessToken={mapboxToken}
             style={{ width: '100%', height: '100%' }}
           >
-          <NavigationControl position="top-right" />
-          <FullscreenControl position="top-right" />
-          
-          {jobsWithData.map((jobData) => (
-            <Marker
-              key={jobData.job.id}
-              longitude={jobData.coordinates[0]}
-              latitude={jobData.coordinates[1]}
-              onClick={() => handleMarkerClick(jobData)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div 
-                className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'animate-pulse w-10 h-10' : 'w-8 h-8'} 
-                            rounded-full flex items-center justify-center text-white 
-                            ${getStatusColor(jobData.job.status)} 
-                            transition-all duration-300 transform hover:scale-110`}
+            <NavigationControl position="top-right" />
+            <FullscreenControl position="top-right" />
+            
+            {jobsWithData.map((jobData) => (
+              <Marker
+                key={jobData.job.id}
+                longitude={jobData.coordinates[0]}
+                latitude={jobData.coordinates[1]}
+                onClick={() => handleMarkerClick(jobData)}
+                style={{ cursor: 'pointer' }}
               >
-                <MapPin className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'h-6 w-6' : 'h-5 w-5'}`} />
-              </div>
-            </Marker>
-          ))}
-          
-          {selectedJob && (
-            <Popup
-              longitude={selectedJob.coordinates[0]}
-              latitude={selectedJob.coordinates[1]}
-              anchor="bottom"
-              closeOnClick={false}
-              onClose={() => setSelectedJob(null)}
-              maxWidth="300px"
-              className="custom-popup"
-            >
-              <Card className="w-full border-0 shadow-none">
-                <CardHeader className="p-3 pb-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-base">
-                        Work Order <span className="text-yellow-500 font-bold">#{selectedJob.job.workOrderNumber}</span>
-                      </CardTitle>
-                      <CardDescription>{selectedJob.customer.name}</CardDescription>
+                <div 
+                  className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'animate-pulse w-10 h-10' : 'w-8 h-8'} 
+                              rounded-full flex items-center justify-center text-white 
+                              ${getStatusColor(jobData.job.status)} 
+                              transition-all duration-300 transform hover:scale-110`}
+                >
+                  <MapPin className={`${jobData.job.status.toLowerCase() === 'in progress' ? 'h-6 w-6' : 'h-5 w-5'}`} />
+                </div>
+              </Marker>
+            ))}
+            
+            {selectedJob && (
+              <Popup
+                longitude={selectedJob.coordinates[0]}
+                latitude={selectedJob.coordinates[1]}
+                anchor="bottom"
+                closeOnClick={false}
+                onClose={() => setSelectedJob(null)}
+                maxWidth="300px"
+                className="custom-popup"
+              >
+                <Card className="w-full border-0 shadow-none">
+                  <CardHeader className="p-3 pb-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-base">
+                          Work Order <span className="text-yellow-500 font-bold">#{selectedJob.job.workOrderNumber}</span>
+                        </CardTitle>
+                        <CardDescription>{selectedJob.customer.name}</CardDescription>
+                      </div>
+                      <Badge 
+                        className={`
+                          ${selectedJob.job.status.toLowerCase() === 'scheduled' ? 'bg-yellow-900/30 text-yellow-500 border-yellow-500/50' : ''}
+                          ${selectedJob.job.status.toLowerCase() === 'in progress' ? 'bg-blue-900/30 text-blue-500 border-blue-500/50' : ''}
+                          ${selectedJob.job.status.toLowerCase() === 'completed' ? 'bg-green-900/30 text-green-500 border-green-500/50' : ''}
+                          border px-3
+                        `}
+                      >
+                        {selectedJob.job.status}
+                      </Badge>
                     </div>
-                    <Badge 
-                      className={`
-                        ${selectedJob.job.status.toLowerCase() === 'scheduled' ? 'bg-yellow-900/30 text-yellow-500 border-yellow-500/50' : ''}
-                        ${selectedJob.job.status.toLowerCase() === 'in progress' ? 'bg-blue-900/30 text-blue-500 border-blue-500/50' : ''}
-                        ${selectedJob.job.status.toLowerCase() === 'completed' ? 'bg-green-900/30 text-green-500 border-green-500/50' : ''}
-                        border px-3
-                      `}
-                    >
-                      {selectedJob.job.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-3 pt-0 pb-2 space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Home className="h-4 w-4 text-red-500" />
-                    <span>
-                      {selectedJob.customer.address}, {selectedJob.customer.city}, {selectedJob.customer.state} {selectedJob.customer.zip}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-green-500" />
-                    <a 
-                      href={`tel:${selectedJob.customer.phone || '5551234567'}`} 
-                      className="hover:underline text-green-500"
-                    >
-                      {selectedJob.customer.phone || '(555) 123-4567'}
-                    </a>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-blue-500" />
-                    <a 
-                      href={`mailto:${selectedJob.customer.email || 'contact@example.com'}`} 
-                      className="hover:underline text-blue-500"
-                    >
-                      {selectedJob.customer.email || 'contact@example.com'}
-                    </a>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-purple-500" />
-                    <span>{formatDate(selectedJob.job.scheduled)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-orange-500" />
-                    <span>{selectedJob.job.timeZone || 'Default timezone'}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-3 pt-0 flex flex-col gap-2">
-                  <div className="grid grid-cols-2 gap-2 w-full mb-2">
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      className="border-blue-500/50 text-blue-500 hover:bg-blue-500/10"
-                      onClick={() => {
-                        if (selectedJob.customer.phone) {
-                          window.open(`sms:${selectedJob.customer.phone.replace(/[^\d+]/g, '')}`, '_blank');
-                        }
-                      }}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      Text
-                    </Button>
-                  
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      className="border-green-500/50 text-green-500 hover:bg-green-500/10"
-                      onClick={() => {
-                        if (selectedJob.customer.phone) {
-                          window.location.href = `tel:${selectedJob.customer.phone.replace(/[^\d+]/g, '')}`;
-                        }
-                      }}
-                    >
-                      <Phone className="h-4 w-4 mr-1" />
-                      Call
-                    </Button>
-                  </div>
-                  
-                  <Button 
-                    asChild 
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-0"
-                    size="sm"
-                  >
-                    <Link href={`/jobs/${selectedJob.job.id}`}>
-                      <span className="flex items-center justify-center gap-1">
-                        View Details
-                        <ArrowRight className="h-4 w-4" />
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0 pb-2 space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Home className="h-4 w-4 text-red-500" />
+                      <span>
+                        {selectedJob.customer.address}, {selectedJob.customer.city}, {selectedJob.customer.state} {selectedJob.customer.zip}
                       </span>
-                    </Link>
-                  </Button>
-                  
-                  <Button 
-                    size="sm"
-                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-0"
-                    onClick={() => {
-                      const address = `${selectedJob.customer.address}, ${selectedJob.customer.city}, ${selectedJob.customer.state} ${selectedJob.customer.zip}`;
-                      const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
-                      window.open(url, '_blank');
-                    }}
-                  >
-                    <span className="flex items-center justify-center gap-1">
-                      Get Directions
-                      <Navigation className="h-4 w-4" />
-                    </span>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </Popup>
-          )}
-        </Map>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-green-500" />
+                      <a 
+                        href={`tel:${selectedJob.customer.phone || '5551234567'}`} 
+                        className="hover:underline text-green-500"
+                      >
+                        {selectedJob.customer.phone || '(555) 123-4567'}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-blue-500" />
+                      <a 
+                        href={`mailto:${selectedJob.customer.email || 'contact@example.com'}`} 
+                        className="hover:underline text-blue-500"
+                      >
+                        {selectedJob.customer.email || 'contact@example.com'}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-purple-500" />
+                      <span>{formatDate(selectedJob.job.scheduled)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-orange-500" />
+                      <span>{selectedJob.job.timeZone || 'Default timezone'}</span>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="p-3 pt-0 flex flex-col gap-2">
+                    <div className="grid grid-cols-2 gap-2 w-full mb-2">
+                      <Button 
+                        size="sm"
+                        variant="outline"
+                        className="border-blue-500/50 text-blue-500 hover:bg-blue-500/10"
+                        onClick={() => {
+                          if (selectedJob.customer.phone) {
+                            window.open(`sms:${selectedJob.customer.phone.replace(/[^\d+]/g, '')}`, '_blank');
+                          }
+                        }}
+                      >
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        Text
+                      </Button>
+                    
+                      <Button 
+                        size="sm"
+                        variant="outline"
+                        className="border-green-500/50 text-green-500 hover:bg-green-500/10"
+                        onClick={() => {
+                          if (selectedJob.customer.phone) {
+                            window.location.href = `tel:${selectedJob.customer.phone.replace(/[^\d+]/g, '')}`;
+                          }
+                        }}
+                      >
+                        <Phone className="h-4 w-4 mr-1" />
+                        Call
+                      </Button>
+                    </div>
+                    
+                    <Button 
+                      asChild 
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-0"
+                      size="sm"
+                    >
+                      <Link href={`/jobs/${selectedJob.job.id}`}>
+                        <span className="flex items-center justify-center gap-1">
+                          View Details
+                          <ArrowRight className="h-4 w-4" />
+                        </span>
+                      </Link>
+                    </Button>
+                    
+                    <Button 
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-0"
+                      onClick={() => {
+                        const address = `${selectedJob.customer.address}, ${selectedJob.customer.city}, ${selectedJob.customer.state} ${selectedJob.customer.zip}`;
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+                        window.open(url, '_blank');
+                      }}
+                    >
+                      <span className="flex items-center justify-center gap-1">
+                        Get Directions
+                        <Navigation className="h-4 w-4" />
+                      </span>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </Popup>
+            )}
+          </Map>
         ) : (
           <div className="h-full w-full flex flex-col items-center justify-center bg-muted">
             <MapPin className="h-8 w-8 mb-2 text-muted-foreground" />

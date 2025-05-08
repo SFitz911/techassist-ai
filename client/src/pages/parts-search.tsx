@@ -18,6 +18,7 @@ import {
 import { apiRequest } from '@/lib/queryClient';
 import { identifyPartsFromJobImages, searchPartsByImage } from '@/lib/openai';
 import { useToast } from '@/hooks/use-toast';
+import { useMapboxToken } from '@/hooks/use-mapbox-token';
 import StoreLocationMap from '@/components/map/store-location-map';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
@@ -104,9 +105,11 @@ export default function PartsSearchPage() {
     retry: false
   });
   
+  // Get mapbox token using our token hook
+  const { token: mapboxToken } = useMapboxToken();
+  
   // Compute derived values
   const searchResults = searchType === 'text' ? textSearchResults?.stores : imageSearchResults?.stores;
-  const mapboxToken = searchType === 'text' ? textSearchResults?.mapboxToken : imageSearchResults?.mapboxToken;
   const aiGeneratedDescription = 
     searchType === 'image' && imageSearchResults?.query ? 
     `AI identified: "${imageSearchResults.query}"` : null;
@@ -510,7 +513,6 @@ export default function PartsSearchPage() {
                           latitude={store.latitude}
                           longitude={store.longitude}
                           className="h-48 w-full"
-                          mapboxToken={mapboxToken}
                         />
                       </div>
                     )}
