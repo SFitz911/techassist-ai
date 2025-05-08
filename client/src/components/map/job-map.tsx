@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Customer, Job } from '@shared/schema';
 import { Map, NavigationControl, FullscreenControl, Marker, Popup } from 'react-map-gl';
+import { useMapboxToken } from '@/hooks/use-mapbox-token';
 
 // Define a type for combined job data
 type JobWithCustomer = {
@@ -14,9 +15,6 @@ type JobWithCustomer = {
   customer: Customer;
   coordinates: [number, number];
 };
-
-// Use the Mapbox token directly
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2ZpdHo5MTEiLCJhIjoiY21hZjJocGcyMDEzbDJrbzdxMzZleTM2eSJ9.pwYUN6WMF5T0yC54B1qsUw';
 
 interface JobMapProps {
   jobs: Job[];
@@ -31,6 +29,7 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
   });
   
   const [selectedJob, setSelectedJob] = useState<JobWithCustomer | null>(null);
+  const { token: mapboxToken, isLoading: isTokenLoading } = useMapboxToken();
   
   // Process jobs data to include customer and coordinates
   const jobsWithData = useMemo(() => {
@@ -132,13 +131,18 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
       </div>
       
       <div className="flex-1 relative">
-        <Map
-          {...viewState}
-          onMove={evt => setViewState(evt.viewState)}
-          mapStyle="mapbox://styles/mapbox/dark-v11"
-          mapboxAccessToken={MAPBOX_TOKEN}
-          style={{ width: '100%', height: '100%' }}
-        >
+        {isTokenLoading ? (
+          <div className="h-full w-full flex items-center justify-center bg-muted">
+            <p className="text-muted-foreground">Loading map...</p>
+          </div>
+        ) : mapboxToken ? (
+          <Map
+            {...viewState}
+            onMove={evt => setViewState(evt.viewState)}
+            mapStyle="mapbox://styles/mapbox/dark-v11"
+            mapboxAccessToken={mapboxToken}
+            style={{ width: '100%', height: '100%' }}
+          >
           <NavigationControl position="top-right" />
           <FullscreenControl position="top-right" />
           
@@ -289,6 +293,12 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
             </Popup>
           )}
         </Map>
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center bg-muted">
+            <MapPin className="h-8 w-8 mb-2 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Map not available - API token missing</p>
+          </div>
+        )}
       </div>
       
       {/* Add a legend for job status colors that's always vertical */}

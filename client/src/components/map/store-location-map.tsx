@@ -78,7 +78,7 @@ export default function StoreLocationMap({
         map.current = null;
       }
     };
-  }, [storeName, latitude, longitude, mapboxToken]);
+  }, [storeName, latitude, longitude, mapboxToken, apiToken, isLoadingToken]);
 
   if (mapError) {
     return (
