@@ -7,6 +7,7 @@ import { MockStore } from '@/lib/mock-stores';
 interface StoreLocationMapProps {
   stores: MockStore[];
   selectedStoreId?: number;
+  selectedPartName?: string;
   onStoreSelect?: (storeId: number) => void;
   height?: string;
 }
@@ -14,6 +15,7 @@ interface StoreLocationMapProps {
 export default function StoreLocationMap({
   stores,
   selectedStoreId,
+  selectedPartName,
   onStoreSelect,
   height = '400px'
 }: StoreLocationMapProps) {
@@ -242,15 +244,34 @@ export default function StoreLocationMap({
   }, [stores, selectedStoreId, map.current, onStoreSelect]);
   
   return (
-    <div className="w-full h-full relative rounded-md overflow-hidden">
+    <div className="w-full h-full relative rounded-md overflow-hidden bg-slate-900">
+      {/* Header displaying store count and possibly the selected part */}
+      <div className="px-4 py-2 border-b bg-gradient-to-r from-slate-900 to-slate-800 absolute top-0 left-0 right-0 z-10">
+        <p className="text-sm font-medium">
+          <span className="text-amber-500">
+            {stores.length} store{stores.length !== 1 ? 's' : ''} near you
+          </span>
+          {selectedPartName && (
+            <span className="ml-1 text-white">with <span className="font-bold text-amber-500">{selectedPartName}</span></span>
+          )}
+        </p>
+      </div>
+      
       {isTokenLoading ? (
-        <div style={{ height }} className="flex items-center justify-center bg-muted">
-          <p className="text-muted-foreground">Loading map...</p>
+        <div className="flex items-center justify-center h-full" style={{ height }}>
+          <div className="text-center">
+            <div className="inline-block animate-spin h-6 w-6 border-2 border-amber-500 border-t-transparent rounded-full mb-2"></div>
+            <p className="text-sm text-muted-foreground">Loading map...</p>
+          </div>
         </div>
       ) : mapboxToken ? (
-        <div ref={mapContainer} style={{ height, width: '100%' }} />
+        <div 
+          ref={mapContainer} 
+          className="w-full h-full" 
+          style={{ height, paddingTop: '40px' }} 
+        />
       ) : (
-        <div style={{ height }} className="flex flex-col items-center justify-center bg-muted">
+        <div className="flex flex-col items-center justify-center h-full" style={{ height }}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2 text-muted-foreground"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
           <p className="text-sm text-muted-foreground">Map not available - API token missing</p>
         </div>
