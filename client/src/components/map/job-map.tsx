@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import Map, { Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { Link } from 'wouter';
 import { MapPin, Home, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';

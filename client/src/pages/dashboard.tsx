@@ -9,6 +9,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import BottomNavigation from "@/components/layout/bottom-navigation";
 
 type Job = {
   id: number;
@@ -148,7 +149,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="page-container p-4">
+    <div className="page-container p-4 pb-20">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">My Jobs</h1>
         <button className="p-2 bg-accent rounded-full">
@@ -190,6 +191,9 @@ export default function Dashboard() {
           </p>
         </div>
       )}
+      
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 }

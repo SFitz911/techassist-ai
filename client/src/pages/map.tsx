@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import JobMap from '@/components/map/job-map';
+import SimpleJobMap from '@/components/map/simple-job-map';
 import TopNavigation from '@/components/layout/top-navigation';
 import { apiRequest } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
@@ -134,7 +134,7 @@ export default function MapPage() {
       </div>
       
       <div className="flex-1">
-        <JobMap jobs={filteredJobs || []} customers={customers} />
+        <SimpleJobMap jobs={filteredJobs || []} customers={customers} />
       </div>
     </div>
   );
