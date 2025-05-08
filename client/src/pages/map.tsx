@@ -133,7 +133,7 @@ export default function MapPage() {
         </div>
       </div>
       
-      <div className="flex-1">
+      <div className="flex-1 min-h-[70vh]">
         <SimpleJobMap jobs={filteredJobs || []} customers={customers} />
       </div>
     </div>

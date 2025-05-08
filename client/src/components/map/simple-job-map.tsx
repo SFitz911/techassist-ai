@@ -162,11 +162,12 @@ export default function SimpleJobMap({ jobs, customers }: JobMapProps) {
         </div>
       `;
       
-      // Create a popup
+      // Create a popup with more space
       const popup = new mapboxgl.Popup({
         offset: 25,
         closeButton: true,
-        className: 'custom-popup'
+        className: 'custom-popup',
+        maxWidth: '320px' // Make popup wider
       }).setDOMContent(popupContent);
       
       // Create a marker
