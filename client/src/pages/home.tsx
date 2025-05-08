@@ -3,7 +3,8 @@ import { Link, useLocation } from 'wouter';
 import { 
   MapPin, FileText, ChevronRight, 
   Wrench, Clock, Briefcase, PackageSearch,
-  PanelBottom, Cpu, Workflow, Loader2
+  PanelBottom, Cpu, Workflow, Loader2,
+  File, Camera, Calculator, Receipt
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -247,6 +248,40 @@ export default function Home() {
                             <ChevronRight className="h-4 w-4" />
                           </Link>
                         </Button>
+                      </div>
+                      
+                      {/* Job Card Navigation Buttons */}
+                      <div className="mt-4 grid grid-cols-5 gap-1 border-t pt-4">
+                        <Link href={`/jobs/${job.id}?tab=details`}>
+                          <button className="flex flex-col items-center w-full text-xs py-1">
+                            <File className="h-4 w-4 mb-1 text-yellow-500" />
+                            <span className="text-[10px]">Details</span>
+                          </button>
+                        </Link>
+                        <Link href={`/jobs/${job.id}?tab=photos`}>
+                          <button className="flex flex-col items-center w-full text-xs py-1">
+                            <Camera className="h-4 w-4 mb-1 text-yellow-500" />
+                            <span className="text-[10px]">Photos</span>
+                          </button>
+                        </Link>
+                        <Link href={`/jobs/${job.id}?tab=notes`}>
+                          <button className="flex flex-col items-center w-full text-xs py-1">
+                            <FileText className="h-4 w-4 mb-1 text-yellow-500" />
+                            <span className="text-[10px]">Notes</span>
+                          </button>
+                        </Link>
+                        <Link href={`/jobs/${job.id}?tab=estimates`}>
+                          <button className="flex flex-col items-center w-full text-xs py-1">
+                            <Calculator className="h-4 w-4 mb-1 text-yellow-500" />
+                            <span className="text-[10px]">Estimates</span>
+                          </button>
+                        </Link>
+                        <Link href={`/jobs/${job.id}?tab=invoice`}>
+                          <button className="flex flex-col items-center w-full text-xs py-1">
+                            <Receipt className="h-4 w-4 mb-1 text-yellow-500" />
+                            <span className="text-[10px]">Invoice</span>
+                          </button>
+                        </Link>
                       </div>
                     </CardContent>
                   </Card>

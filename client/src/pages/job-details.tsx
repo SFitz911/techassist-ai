@@ -17,7 +17,11 @@ export default function JobDetails() {
   const [match, params] = useRoute("/jobs/:id");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("details");
+  
+  // Check URL for tab parameter
+  const searchParams = new URLSearchParams(window.location.search);
+  const initialTab = searchParams.get('tab') || "details";
+  const [activeTab, setActiveTab] = useState(initialTab);
   
   // Get job details
   const { data: job, isLoading: isLoadingJob } = useQuery({
