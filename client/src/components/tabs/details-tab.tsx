@@ -26,6 +26,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 interface DetailsTabProps {
   job: {
@@ -242,7 +243,9 @@ export default function DetailsTab({ job, customer }: DetailsTabProps) {
               <Clock className="h-4 w-4 mt-0.5 mr-2 text-orange-500" />
               <div>
                 <p className="font-medium">Status</p>
-                <p className="text-sm text-muted-foreground capitalize">{job.status.replace('_', ' ')}</p>
+                <div className="mt-1">
+                  <StatusBadge jobId={job.id} status={job.status} size="md" />
+                </div>
               </div>
             </div>
             
