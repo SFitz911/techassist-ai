@@ -501,6 +501,17 @@ export default function PartsSearchPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="pt-2">
+                    {/* Add store location map */}
+                    {store.latitude && store.longitude && (
+                      <div className="mb-4 border border-border rounded-md overflow-hidden">
+                        <StoreLocationMap 
+                          storeName={store.name}
+                          latitude={store.latitude}
+                          longitude={store.longitude}
+                          className="h-48 w-full"
+                        />
+                      </div>
+                    )}
                     <div className="space-y-3">
                       {store.parts.map((part: any) => {
                         const isAdded = isPartAdded(part.id);
