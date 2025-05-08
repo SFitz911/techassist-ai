@@ -3,16 +3,30 @@ import { Link, useLocation } from 'wouter';
 import { 
   MapPin, FileText, ChevronRight, 
   Wrench, Clock, Briefcase, PackageSearch,
-  PanelBottom, Cpu, Workflow 
+  PanelBottom, Cpu, Workflow, Loader2
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
+import { Customer, Job } from '@shared/schema';
 
 export default function Home() {
   const [_, setLocation] = useLocation();
+
+  // Fetch jobs data
+  const { data: jobs, isLoading: isLoadingJobs } = useQuery<Job[]>({
+    queryKey: ['/api/technicians/1/jobs'],
+    retry: false
+  });
+
+  // Fetch customers data
+  const { data: customers, isLoading: isLoadingCustomers } = useQuery<Customer[]>({
+    queryKey: ['/api/customers'],
+    retry: false
+  });
 
   useEffect(() => {
     // Scroll to top on page load
@@ -21,7 +35,7 @@ export default function Home() {
 
   const jumpToSection = (section: string) => {
     switch(section) {
-      case 'jobs': setLocation('/'); break;
+      case 'jobs': setLocation('/dashboard'); break;
       case 'map': setLocation('/map'); break;
       default: setLocation('/');
     }
@@ -167,6 +181,87 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+        </div>
+        
+        {/* All Jobs List */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">All Jobs</h2>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10"
+              onClick={() => setLocation('/dashboard')}
+            >
+              <Briefcase className="w-4 h-4 mr-2 text-yellow-500" />
+              <span>View All</span>
+            </Button>
+          </div>
+          
+          {isLoadingJobs || isLoadingCustomers ? (
+            <div className="py-8 flex justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : jobs && jobs.length > 0 ? (
+            <div className="space-y-3">
+              {jobs.map((job) => {
+                const customer = customers?.find(c => c.id === job.customerId);
+                
+                // Get status color
+                let statusColor = '';
+                switch(job.status.toLowerCase()) {
+                  case 'scheduled':
+                    statusColor = 'bg-yellow-500/20 text-yellow-500';
+                    break;
+                  case 'in_progress':
+                  case 'in progress':
+                    statusColor = 'bg-blue-500/20 text-blue-500';
+                    break;
+                  case 'completed':
+                    statusColor = 'bg-green-500/20 text-green-500';
+                    break;
+                  default:
+                    statusColor = 'bg-slate-500/20 text-slate-500';
+                }
+                
+                return (
+                  <Card key={job.id} className="border border-border/40 hover:border-border/80 hover:shadow transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-sm text-muted-foreground mb-1">
+                            Work Order #<span className="text-yellow-500 font-bold">{job.workOrderNumber}</span>
+                          </div>
+                          <h3 className="font-semibold text-base mb-1">{customer?.name}</h3>
+                          <p className="text-sm mb-2">
+                            {customer?.address}, {customer?.city}, {customer?.state}
+                          </p>
+                          <div className="flex items-center">
+                            <div className={`text-xs py-0.5 px-2 rounded-full ${statusColor} font-medium`}>
+                              {job.status.replace('_', ' ')}
+                            </div>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="icon" className="rounded-full" asChild>
+                          <Link href={`/jobs/${job.id}`}>
+                            <ChevronRight className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-10">
+              <Briefcase className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium">No jobs found</h3>
+              <p className="text-muted-foreground mt-1">
+                You don't have any jobs assigned to you
+              </p>
+            </div>
+          )}
         </div>
         
         {/* App Features */}

@@ -97,15 +97,70 @@ export default function TopNavigation() {
             <Button 
               variant="outline" 
               size="icon" 
-              className="border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10 hidden sm:flex"
+              className="border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10"
             >
               <Map className="h-5 w-5 text-yellow-500" />
             </Button>
           </Link>
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="" alt="User" />
-            <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
-          </Avatar>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10"
+              >
+                <Menu className="h-5 w-5 text-yellow-500" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="sm:max-w-xs flex flex-col">
+              <SheetHeader className="px-1">
+                <SheetTitle className="flex items-center">
+                  <User className="w-5 h-5 mr-2 text-yellow-500" />
+                  Technician Menu
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2 py-4">
+                {menuItems.map((item) => (
+                  <Link key={item.path} href={item.path}>
+                    <Button
+                      variant={isActive(item.path) ? "default" : "ghost"}
+                      className={`w-full justify-start ${
+                        isActive(item.path) 
+                          ? "bg-green-500 hover:bg-green-600 text-white"
+                          : "hover:bg-secondary"
+                      }`}
+                    >
+                      <item.icon className="mr-2 h-5 w-5" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+              <div className="flex items-center justify-between mt-4 border-t pt-4">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="" alt="User" />
+                    <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium text-sm">John Doe</p>
+                    <p className="text-xs text-muted-foreground">Technician</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-auto">
+                <div className="pt-4">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                  >
+                    <Settings className="mr-2 h-5 w-5" />
+                    Settings
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
     </div>
