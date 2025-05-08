@@ -15,8 +15,8 @@ type JobWithCustomer = {
   coordinates: [number, number];
 };
 
-// Use the Mapbox token from environment variables
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '';
+// Use the Mapbox token directly
+const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2ZpdHo5MTEiLCJhIjoiY205bnMwanpxMHF6eTJpcHRuZDY0OHIxaSJ9.yjpiLIPh4aWmSSJhszviTw';
 
 interface JobMapProps {
   jobs: Job[];
