@@ -80,7 +80,7 @@ export default function MapPage() {
   }, {} as Record<string, number>) || {};
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen overflow-auto map-container">
       <TopNavigation />
       
       {/* Filter controls */}
