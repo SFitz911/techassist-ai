@@ -100,11 +100,11 @@ export default function MapPage() {
           )}
         </div>
         
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex flex-col gap-2 pb-1">
           <Button
             variant={statusFilter === 'scheduled' ? 'default' : 'outline'}
             size="sm"
-            className={`h-8 ${statusFilter === 'scheduled' ? 'bg-yellow-500 hover:bg-yellow-600 text-black' : 'border-yellow-500/50 text-yellow-500 hover:text-yellow-400'}`}
+            className={`h-8 w-full ${statusFilter === 'scheduled' ? 'bg-yellow-500 hover:bg-yellow-600 text-black' : 'border-yellow-500/50 text-yellow-500 hover:text-yellow-400'}`}
             onClick={() => setStatusFilter(statusFilter === 'scheduled' ? null : 'scheduled')}
           >
             <Calendar className="h-4 w-4 mr-1" />
@@ -114,7 +114,7 @@ export default function MapPage() {
           <Button
             variant={statusFilter === 'in progress' ? 'default' : 'outline'}
             size="sm"
-            className={`h-8 ${statusFilter === 'in progress' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'border-blue-500/50 text-blue-500 hover:text-blue-400'}`}
+            className={`h-8 w-full ${statusFilter === 'in progress' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'border-blue-500/50 text-blue-500 hover:text-blue-400'}`}
             onClick={() => setStatusFilter(statusFilter === 'in progress' ? null : 'in progress')}
           >
             <MapPin className="h-4 w-4 mr-1" />
@@ -124,7 +124,7 @@ export default function MapPage() {
           <Button
             variant={statusFilter === 'completed' ? 'default' : 'outline'}
             size="sm"
-            className={`h-8 ${statusFilter === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white' : 'border-green-500/50 text-green-500 hover:text-green-400'}`}
+            className={`h-8 w-full ${statusFilter === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white' : 'border-green-500/50 text-green-500 hover:text-green-400'}`}
             onClick={() => setStatusFilter(statusFilter === 'completed' ? null : 'completed')}
           >
             <MapPin className="h-4 w-4 mr-1" />
