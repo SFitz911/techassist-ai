@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
 import { MockStore } from '@/lib/mock-stores';
-import { ExternalLink, Map, Navigation } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Navigation, Clock, Store } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface FallbackStoreMapProps {
   stores: MockStore[];
@@ -13,75 +15,128 @@ export default function FallbackStoreMap({
   selectedPartName,
   height = '300px' 
 }: FallbackStoreMapProps) {
+  // Determine available features in stores
+  const hasPhoneNumbers = stores.some(store => store.phone);
+  const hasHours = stores.some(store => store.hours);
   
   return (
-    <div className="w-full rounded-md overflow-hidden relative bg-slate-900" style={{ height }}>
-      {/* Header with store count and part name */}
-      <div className="px-4 py-2 border-b bg-gradient-to-r from-slate-900 to-slate-800 absolute top-0 left-0 right-0 z-10">
-        <p className="text-sm font-medium">
-          <span className="text-amber-500">
-            {stores.length} store{stores.length !== 1 ? 's' : ''} near you
-          </span>
+    <div className="w-full rounded-md overflow-hidden bg-background" style={{ height: 'auto', minHeight: height, maxHeight: '80vh' }}>
+      {/* Header */}
+      <div className="sticky top-0 z-10 px-4 py-3 border-b bg-gradient-to-r from-slate-900 to-slate-800 flex items-center justify-between">
+        <div>
+          <h3 className="font-medium text-white flex items-center">
+            <Store className="h-4 w-4 mr-2" />
+            <span className="text-amber-400 font-bold">{stores.length}</span> 
+            <span className="ml-1">Store{stores.length !== 1 ? 's' : ''} Found</span>
+          </h3>
           {selectedPartName && (
-            <span className="ml-1 text-white">with <span className="font-bold text-amber-500">{selectedPartName}</span></span>
+            <Badge variant="outline" className="mt-1 bg-amber-500/10 text-amber-400 border-amber-500/30">
+              Searching for: {selectedPartName}
+            </Badge>
           )}
-        </p>
+        </div>
       </div>
       
-      <div className="mt-10 p-4 h-full overflow-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Store list with enhanced styling */}
+      <div className="p-3 overflow-auto" style={{ maxHeight: `calc(${height} - 60px)` }}>
+        <div className="grid grid-cols-1 gap-3">
           {stores.map(store => (
-            <div 
+            <Card 
               key={store.id}
-              className="bg-slate-800 rounded-md p-4 border border-slate-700 flex flex-col"
+              className="overflow-hidden border-slate-700/50 bg-slate-800/50 hover:bg-slate-800/70 transition-colors"
             >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="h-10 w-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-bold">
-                  {store.name.charAt(0)}
+              <div className="p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-12 w-12 rounded-md bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
+                    {store.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-white text-lg">{store.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30">
+                        {store.distance || '2.3 miles away'}
+                      </Badge>
+                      {store.parts && store.parts.length > 0 && (
+                        <Badge variant="outline" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
+                          {store.parts.length} items in stock
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium text-white">{store.name}</h3>
-                  <p className="text-xs text-slate-400">{store.distance || '2.3 miles away'}</p>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-start gap-2 text-sm text-slate-300">
+                    <MapPin className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                    <span>{store.address}, {store.city}, {store.state} {store.zipCode}</span>
+                  </div>
+                  
+                  {hasPhoneNumbers && store.phone && (
+                    <div className="flex items-center gap-2 text-sm text-slate-300">
+                      <Phone className="h-4 w-4 text-green-500 shrink-0" />
+                      <span>{store.phone}</span>
+                    </div>
+                  )}
+                  
+                  {hasHours && store.hours && (
+                    <div className="flex items-center gap-2 text-sm text-slate-300">
+                      <Clock className="h-4 w-4 text-blue-500 shrink-0" />
+                      <span>{store.hours}</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              <div className="text-xs text-slate-300 mb-1 flex items-start gap-2">
-                <Map className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                <span>{store.address}, {store.city}, {store.state} {store.zipCode}</span>
-              </div>
-              
-              <div className="flex gap-3 mt-3">
-                <a 
-                  href={`tel:${store.phone}`}
-                  className="flex items-center gap-1 bg-green-700 hover:bg-green-600 text-white px-3 py-1.5 rounded text-xs font-medium"
-                >
-                  Call
-                </a>
-                <a 
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${store.address}, ${store.city}, ${store.state} ${store.zipCode}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium"
-                >
-                  <Navigation className="h-3.5 w-3.5" />
-                  Directions
-                </a>
-              </div>
-              
-              {store.latitude && store.longitude && (
-                <div className="mt-4 -mx-4 -mb-4 border-t border-slate-700 p-3 flex items-center justify-center bg-slate-900/50">
-                  <a 
-                    href={`https://www.google.com/maps/search/?api=1&query=${store.latitude},${store.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-blue-400 flex items-center gap-1.5 hover:text-blue-300"
+                
+                <div className="flex flex-wrap gap-2">
+                  {store.phone && (
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20 hover:text-green-300"
+                      asChild
+                    >
+                      <a href={`tel:${store.phone}`}>
+                        <Phone className="h-3.5 w-3.5 mr-1.5" />
+                        Call Store
+                      </a>
+                    </Button>
+                  )}
+                  
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    className="bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20 hover:text-blue-300"
+                    asChild
                   >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    View on Google Maps
-                  </a>
+                    <a 
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${store.name} ${store.address}, ${store.city}, ${store.state} ${store.zipCode}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Navigation className="h-3.5 w-3.5 mr-1.5" />
+                      Get Directions
+                    </a>
+                  </Button>
+                  
+                  {store.latitude && store.longitude && (
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="bg-slate-500/10 text-slate-400 border-slate-500/30 hover:bg-slate-500/20 hover:text-slate-300"
+                      asChild
+                    >
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${store.latitude},${store.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                        View on Google Maps
+                      </a>
+                    </Button>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            </Card>
           ))}
         </div>
       </div>
