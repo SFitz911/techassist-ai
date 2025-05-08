@@ -10,13 +10,15 @@ interface StoreLocationMapProps {
   latitude: number;
   longitude: number;
   className?: string;
+  mapboxToken?: string;
 }
 
 export default function StoreLocationMap({ 
   storeName, 
   latitude, 
   longitude, 
-  className = "h-48 w-full rounded-md overflow-hidden" 
+  className = "h-48 w-full rounded-md overflow-hidden",
+  mapboxToken
 }: StoreLocationMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -25,7 +27,20 @@ export default function StoreLocationMap({
   useEffect(() => {
     if (!mapContainer.current) return;
     
-    // The token is now directly set at the top of the file
+    // Set Mapbox token from props if available
+    if (mapboxToken) {
+      mapboxgl.accessToken = mapboxToken;
+    } else {
+      // Fallback to environment variable if token not provided via props
+      const envToken = process.env.MAPBOX_ACCESS_TOKEN;
+      if (envToken) {
+        mapboxgl.accessToken = envToken;
+      } else {
+        console.error("Mapbox token is missing");
+        setMapError(true);
+        return;
+      }
+    }
     
     try {
       // Initialize map
@@ -60,7 +75,7 @@ export default function StoreLocationMap({
         map.current = null;
       }
     };
-  }, [storeName, latitude, longitude]);
+  }, [storeName, latitude, longitude, mapboxToken]);
 
   if (mapError) {
     return (
