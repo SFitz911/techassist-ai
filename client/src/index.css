@@ -101,15 +101,15 @@
   }
   
   html, body {
-    @apply h-full bg-background text-foreground;
+    @apply min-h-full bg-background text-foreground;
   }
   
   #root {
-    @apply h-full;
+    @apply min-h-full flex flex-col;
   }
   
   .page-container {
-    @apply h-full flex flex-col overflow-y-auto;
+    @apply flex-1 flex flex-col overflow-y-auto;
   }
   
   .job-header {
@@ -118,6 +118,15 @@
   
   .content-area {
     @apply flex-1 overflow-y-auto;
+  }
+  
+  /* Ensure all pages can scroll */
+  .app-container, 
+  .page-wrapper,
+  .dashboard-container,
+  .map-container,
+  .job-details-container {
+    @apply overflow-y-auto;
   }
   
   .navigation-bar {
