@@ -259,7 +259,7 @@ export default function PartsSearchPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen overflow-auto">
+    <div className="flex flex-col min-h-screen overflow-auto pb-16 md:pb-0">
       <TopNavigation />
       
       <div className="container py-6 flex-1">
@@ -565,6 +565,9 @@ export default function PartsSearchPage() {
           )}
         </div>
       </div>
+      
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 }
