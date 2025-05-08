@@ -105,25 +105,28 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
   
   // Get color for job status
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status.toLowerCase().replace('_', ' ')) {
       case 'scheduled':
-        return 'bg-blue-500 hover:bg-blue-600';
+        return 'bg-yellow-500 hover:bg-yellow-600 border-2 border-yellow-300';
       case 'in progress':
-        return 'bg-orange-500 hover:bg-orange-600';
+        return 'bg-blue-500 hover:bg-blue-600 border-2 border-blue-300';
       case 'completed':
-        return 'bg-green-500 hover:bg-green-600';
+        return 'bg-green-500 hover:bg-green-600 border-2 border-green-300';
       case 'canceled':
-        return 'bg-red-500 hover:bg-red-600';
+        return 'bg-red-500 hover:bg-red-600 border-2 border-red-300';
       default:
-        return 'bg-slate-500 hover:bg-slate-600';
+        return 'bg-slate-500 hover:bg-slate-600 border-2 border-slate-300';
     }
   };
   
   return (
     <div className="h-full w-full flex flex-col">
-      <div className="px-4 py-2 border-b">
-        <h1 className="text-xl font-bold">Job Map</h1>
-        <p className="text-sm text-muted-foreground">
+      <div className="px-4 py-3 border-b bg-gradient-to-r from-slate-900 to-slate-800">
+        <h1 className="text-xl font-bold flex items-center">
+          <MapPin className="h-5 w-5 mr-2 text-yellow-500" />
+          Job Map
+        </h1>
+        <p className="text-sm text-amber-500 font-medium mt-1">
           {jobsWithData.length} job{jobsWithData.length !== 1 ? 's' : ''} on the map
         </p>
       </div>
@@ -161,12 +164,15 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
               closeOnClick={false}
               onClose={() => setSelectedJob(null)}
               maxWidth="300px"
+              className="custom-popup"
             >
               <Card className="w-full border-0 shadow-none">
                 <CardHeader className="p-3 pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-base">Work Order #{selectedJob.job.workOrderNumber}</CardTitle>
+                      <CardTitle className="text-base">
+                        Work Order <span className="text-yellow-500 font-bold">#{selectedJob.job.workOrderNumber}</span>
+                      </CardTitle>
                       <CardDescription>{selectedJob.customer.name}</CardDescription>
                     </div>
                     <Badge variant={selectedJob.job.status.toLowerCase() === 'completed' ? 'default' : 'outline'}>
@@ -176,22 +182,26 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
                 </CardHeader>
                 <CardContent className="p-3 pt-0 pb-2 space-y-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <Home className="h-4 w-4 text-muted-foreground" />
+                    <Home className="h-4 w-4 text-red-500" />
                     <span>
                       {selectedJob.customer.address}, {selectedJob.customer.city}, {selectedJob.customer.state} {selectedJob.customer.zip}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Calendar className="h-4 w-4 text-purple-500" />
                     <span>{formatDate(selectedJob.job.scheduled)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Clock className="h-4 w-4 text-orange-500" />
                     <span>{selectedJob.job.timeZone || 'Default timezone'}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="p-3 pt-0">
-                  <Button asChild className="w-full" size="sm">
+                  <Button 
+                    asChild 
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-0"
+                    size="sm"
+                  >
                     <Link href={`/jobs/${selectedJob.job.id}`}>
                       <span className="flex items-center justify-center gap-1">
                         View Details
