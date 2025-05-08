@@ -8,7 +8,8 @@ import { MapPin } from 'lucide-react';
 import { Customer, Job } from '@shared/schema';
 
 // Mapbox token - in a real application, this should be an environment variable
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+// Using a public token that should work for development/testing
+const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
 // Configure mapbox
 mapboxgl.accessToken = MAPBOX_TOKEN;
