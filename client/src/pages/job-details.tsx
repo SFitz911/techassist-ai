@@ -8,6 +8,7 @@ import DetailsTab from "@/components/tabs/details-tab";
 import PhotosTab from "@/components/tabs/photos-tab";
 import NotesTab from "@/components/tabs/notes-tab";
 import EstimatesTab from "@/components/tabs/estimates-tab";
+import InvoiceTab from "@/components/tabs/invoice-tab";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,7 +55,7 @@ export default function JobDetails() {
           <Skeleton className="h-48 w-full" />
         </div>
         <div className="navigation-bar">
-          {["details", "photos", "notes", "estimates"].map((tab) => (
+          {["details", "photos", "notes", "estimates", "invoice"].map((tab) => (
             <div key={tab} className="tab-button">
               <Skeleton className="w-5 h-5 mb-1 rounded-full" />
               <Skeleton className="w-12 h-3" />
@@ -90,6 +91,10 @@ export default function JobDetails() {
         
         <TabsContent value="estimates" className="flex-1 overflow-y-auto p-0 m-0 data-[state=active]:flex data-[state=active]:flex-col">
           <EstimatesTab jobId={job.id} />
+        </TabsContent>
+        
+        <TabsContent value="invoice" className="flex-1 overflow-y-auto p-0 m-0 data-[state=active]:flex data-[state=active]:flex-col">
+          <InvoiceTab jobId={job.id} />
         </TabsContent>
         
         <NavigationBar activeTab={activeTab} onChange={setActiveTab} />

@@ -1,4 +1,4 @@
-import { File, Camera, FileText, Calculator } from "lucide-react";
+import { File, Camera, FileText, Calculator, Receipt } from "lucide-react";
 
 interface NavigationBarProps {
   activeTab: string;
@@ -11,6 +11,7 @@ export default function NavigationBar({ activeTab, onChange }: NavigationBarProp
     { id: "photos", label: "Photos", icon: Camera },
     { id: "notes", label: "Notes", icon: FileText },
     { id: "estimates", label: "Estimates", icon: Calculator },
+    { id: "invoice", label: "Invoice", icon: Receipt },
   ];
 
   return (
