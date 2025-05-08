@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { 
   Search, 
@@ -8,9 +8,13 @@ import {
   ShoppingCart, 
   Check, 
   DollarSign,
-  Loader2
+  Loader2,
+  Camera,
+  Upload,
+  FileImage
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+import { identifyPartsFromJobImages, searchPartsByImage } from '@/lib/openai';
 import { useToast } from '@/hooks/use-toast';
 import TopNavigation from '@/components/layout/top-navigation';
 import { Button } from '@/components/ui/button';
@@ -31,11 +35,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function PartsSearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [jobId, setJobId] = useState<string>('');
   const [selectedParts, setSelectedParts] = useState<Map<number, any>>(new Map());
+  const [searchType, setSearchType] = useState<'text' | 'image'>('text');
+  const [imageData, setImageData] = useState<string | null>(null);
+  const [aiGeneratedQuery, setAiGeneratedQuery] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   // Get available jobs for the dropdown
@@ -44,12 +53,12 @@ export default function PartsSearchPage() {
     queryFn: async () => apiRequest('/api/technicians/1/jobs'),
   });
 
-  // Search for parts
+  // Search for parts by text query
   const { 
-    data: searchResults, 
-    refetch, 
-    isLoading, 
-    isError 
+    data: textSearchResults, 
+    refetch: refetchTextSearch, 
+    isLoading: isLoadingTextSearch, 
+    isError: isErrorTextSearch
   } = useQuery({
     queryKey: ['/api/stores/search', searchQuery],
     queryFn: async () => {
@@ -58,6 +67,49 @@ export default function PartsSearchPage() {
     enabled: false,
     retry: false
   });
+  
+  // Search for parts by image
+  const {
+    data: imageSearchResults,
+    refetch: refetchImageSearch,
+    isLoading: isLoadingImageSearch,
+    isError: isErrorImageSearch
+  } = useQuery({
+    queryKey: ['/api/stores/search-by-image', imageData],
+    queryFn: async () => {
+      if (!imageData) return null;
+      return searchPartsByImage(imageData);
+    },
+    enabled: false,
+    retry: false
+  });
+  
+  // Analyze image from a job
+  const {
+    data: jobImageAnalysisResults,
+    refetch: refetchJobImageAnalysis,
+    isLoading: isLoadingJobImageAnalysis,
+    isError: isErrorJobImageAnalysis
+  } = useQuery({
+    queryKey: ['/api/jobs/identify-parts', jobId],
+    queryFn: async () => {
+      if (!jobId) return null;
+      return identifyPartsFromJobImages(parseInt(jobId));
+    },
+    enabled: false,
+    retry: false
+  });
+  
+  // Compute derived values
+  const searchResults = searchType === 'text' ? textSearchResults : imageSearchResults?.stores;
+  const isLoading = 
+    (searchType === 'text' && isLoadingTextSearch) || 
+    (searchType === 'image' && isLoadingImageSearch) ||
+    isLoadingJobImageAnalysis;
+  const isError = 
+    (searchType === 'text' && isErrorTextSearch) || 
+    (searchType === 'image' && isErrorImageSearch) ||
+    isErrorJobImageAnalysis;
 
   // Format price as currency
   const formatPrice = (price: number) => {
@@ -108,10 +160,91 @@ export default function PartsSearchPage() {
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleTextSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      refetch();
+      setSearchType('text');
+      refetchTextSearch();
+    }
+  };
+  
+  // Handle image-based part search
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        if (event.target && event.target.result) {
+          const imageData = event.target.result as string;
+          setImageData(imageData);
+          setSearchType('image');
+          refetchImageSearch();
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Handle identifying parts from a job's photos
+  const handleIdentifyFromJobPhotos = () => {
+    if (!jobId) {
+      toast({
+        title: 'No job selected',
+        description: 'Please select a job to analyze photos from.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    refetchJobImageAnalysis();
+  };
+  
+  // Capture image from camera
+  const captureImage = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      
+      // Create video element
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+      
+      setTimeout(() => {
+        // Create canvas to capture frame
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        
+        if (ctx) {
+          // Draw video frame to canvas
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          
+          // Get image data
+          const capturedImage = canvas.toDataURL('image/jpeg');
+          
+          // Stop stream
+          const tracks = stream.getTracks();
+          tracks.forEach(track => track.stop());
+          
+          // Process image
+          setImageData(capturedImage);
+          setSearchType('image');
+          refetchImageSearch();
+        }
+        
+        // Stop stream
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+      }, 500);
+    } catch (error) {
+      toast({
+        title: 'Camera Error',
+        description: 'Could not access camera. Please check permissions and try again.',
+        variant: 'destructive',
+      });
     }
   };
 

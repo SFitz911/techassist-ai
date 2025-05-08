@@ -8,8 +8,10 @@ import { apiRequest } from "./queryClient";
  */
 export async function analyzePhoto(photoId: number): Promise<any> {
   try {
-    const response = await apiRequest('POST', `/api/photos/${photoId}/analyze`, {});
-    return await response.json();
+    const response = await apiRequest(`/api/photos/${photoId}/analyze`, {
+      method: 'POST'
+    });
+    return response;
   } catch (error) {
     console.error("Error analyzing photo:", error);
     throw error;
@@ -21,8 +23,10 @@ export async function analyzePhoto(photoId: number): Promise<any> {
  */
 export async function enhanceNote(noteId: number): Promise<any> {
   try {
-    const response = await apiRequest('POST', `/api/notes/${noteId}/enhance`, {});
-    return await response.json();
+    const response = await apiRequest(`/api/notes/${noteId}/enhance`, {
+      method: 'POST'
+    });
+    return response;
   } catch (error) {
     console.error("Error enhancing note:", error);
     throw error;
@@ -46,6 +50,41 @@ export async function searchParts(query: string): Promise<any> {
     return await response.json();
   } catch (error) {
     console.error("Error searching for parts:", error);
+    throw error;
+  }
+}
+
+/**
+ * Identifies parts from a job's photos using AI and suggests replacement options
+ * @param jobId The ID of the job to analyze photos from
+ * @returns Object containing identified parts and suggestions
+ */
+export async function identifyPartsFromJobImages(jobId: number): Promise<any> {
+  try {
+    const response = await apiRequest(`/api/jobs/${jobId}/identify-parts`, {
+      method: 'POST'
+    });
+    return response;
+  } catch (error) {
+    console.error("Error identifying parts from job images:", error);
+    throw error;
+  }
+}
+
+/**
+ * Searches for specific parts in local hardware stores based on an image
+ * @param imageData Base64 encoded image data
+ * @returns Array of parts with store information and prices
+ */
+export async function searchPartsByImage(imageData: string): Promise<any> {
+  try {
+    const response = await apiRequest('/api/stores/search-by-image', {
+      method: 'POST',
+      body: JSON.stringify({ imageData })
+    });
+    return response;
+  } catch (error) {
+    console.error("Error searching for parts by image:", error);
     throw error;
   }
 }
