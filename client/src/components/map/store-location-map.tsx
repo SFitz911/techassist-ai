@@ -2,8 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, ExternalLink } from 'lucide-react';
-
-// Note: Mapbox token is provided via props
+import { useMapboxToken } from '@/hooks/use-mapbox-token';
 
 interface StoreLocationMapProps {
   storeName: string;
@@ -23,23 +22,27 @@ export default function StoreLocationMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapError, setMapError] = useState<boolean>(false);
+  const { token: apiToken, isLoading: isLoadingToken } = useMapboxToken();
 
   useEffect(() => {
     if (!mapContainer.current) return;
     
-    // Set Mapbox token from props if available
+    // Don't proceed if we're still loading the token
+    if (isLoadingToken) return;
+    
+    // Set Mapbox token from props (highest priority)
     if (mapboxToken) {
       mapboxgl.accessToken = mapboxToken;
-    } else {
-      // Fallback to environment variable if token not provided via props
-      const envToken = process.env.MAPBOX_ACCESS_TOKEN;
-      if (envToken) {
-        mapboxgl.accessToken = envToken;
-      } else {
-        console.error("Mapbox token is missing");
-        setMapError(true);
-        return;
-      }
+    } 
+    // Use token from API (second priority)
+    else if (apiToken) {
+      mapboxgl.accessToken = apiToken;
+    } 
+    // No token available
+    else {
+      console.error("Mapbox token is missing");
+      setMapError(true);
+      return;
     }
     
     try {

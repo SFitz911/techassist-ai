@@ -26,6 +26,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = app.use("/api", (req, res, next) => {
     next();
   });
+  
+  // Configuration endpoints
+  app.get("/api/config/mapbox", (_req: Request, res: Response) => {
+    res.json({ token: process.env.MAPBOX_ACCESS_TOKEN });
+  });
 
   // Users
   app.get("/api/users/:id", async (req: Request, res: Response) => {
