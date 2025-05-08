@@ -442,16 +442,18 @@ Be specific about parts needed so a technician can search for these exact items 
   // Parts store search using Python scraper
   app.get("/api/stores/search", async (req: Request, res: Response) => {
     try {
-      const { query, lat, lng } = z.object({
+      const { query, location, lat, lng } = z.object({
         query: z.string(),
+        location: z.string().optional(),
         lat: z.string().optional(),
         lng: z.string().optional()
       }).parse(req.query);
       
       try {
-        // Run the Python script to search for parts
+        // Run the Python script to search for parts with location
         const { execSync } = require('child_process');
-        const result = execSync(`python3 server/scrapers/hardware-store-scraper.py "${query}"`);
+        const locationParam = location ? `"${location}"` : '""';
+        const result = execSync(`python3 server/scrapers/hardware-store-scraper.py "${query}" ${locationParam}`);
         const parts = JSON.parse(result.toString());
         
         // Format the results to match our expected structure

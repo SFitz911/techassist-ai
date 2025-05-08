@@ -19,15 +19,51 @@ export default function PartSearch({ initialQuery = '', jobId, onPartSelect }: P
   const [selectedParts, setSelectedParts] = useState<Map<number, any>>(new Map());
   const { toast } = useToast();
 
+  // Get job details to access customer location
+  const { data: jobData } = useQuery({
+    queryKey: [`/api/jobs/${jobId}`],
+    queryFn: async () => {
+      return apiRequest(`/api/jobs/${jobId}`);
+    },
+    enabled: !!jobId,
+  });
+  
+  // Get customer details for location information
+  const { data: customerData } = useQuery({
+    queryKey: [`/api/customers/${jobData?.customerId}`],
+    queryFn: async () => {
+      return apiRequest(`/api/customers/${jobData?.customerId}`);
+    },
+    enabled: !!jobData?.customerId,
+  });
+  
+  // Build location string from customer data
+  const getLocationString = () => {
+    if (!customerData) return "";
+    
+    const parts = [];
+    if (customerData.address) parts.push(customerData.address);
+    if (customerData.city) parts.push(customerData.city);
+    if (customerData.state) parts.push(customerData.state);
+    if (customerData.zip) parts.push(customerData.zip);
+    
+    return parts.join(", ");
+  };
+  
   const {
     data: stores,
     isLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['/api/stores/search', searchQuery],
+    queryKey: ['/api/stores/search', searchQuery, getLocationString()],
     queryFn: async () => {
-      const response = await apiRequest(`/api/stores/search?query=${encodeURIComponent(searchQuery)}`);
+      const locationParam = getLocationString() 
+        ? `&location=${encodeURIComponent(getLocationString())}` 
+        : '';
+      const response = await apiRequest(
+        `/api/stores/search?query=${encodeURIComponent(searchQuery)}${locationParam}`
+      );
       return response;
     },
     enabled: searchQuery.length > 2,
