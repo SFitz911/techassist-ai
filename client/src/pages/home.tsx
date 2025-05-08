@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
 import { Customer, Job } from '@shared/schema';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 export default function Home() {
   const [_, setLocation] = useLocation();
@@ -169,9 +170,7 @@ export default function Home() {
                   <h3 className="font-semibold text-base mb-1">Grande Deluxe</h3>
                   <p className="text-sm mb-2">123 Business St, Houston, TX 77001</p>
                   <div className="flex items-center">
-                    <div className="text-xs py-0.5 px-2 rounded-full bg-blue-500/20 text-blue-500 font-medium">
-                      In Progress
-                    </div>
+                    <StatusBadge jobId={1} status="in progress" size="sm" />
                   </div>
                 </div>
                 <Button variant="outline" size="icon" className="rounded-full" asChild>
@@ -272,9 +271,7 @@ export default function Home() {
                             {customer?.address}, {customer?.city}, {customer?.state}
                           </p>
                           <div className="flex items-center">
-                            <div className={`text-xs py-0.5 px-2 rounded-full ${statusColor} font-medium`}>
-                              {job.status.replace('_', ' ')}
-                            </div>
+                            <StatusBadge jobId={job.id} status={job.status} size="sm" />
                           </div>
                         </div>
                         <Button variant="outline" size="icon" className="rounded-full" asChild>

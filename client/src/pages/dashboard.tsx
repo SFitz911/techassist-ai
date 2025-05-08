@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import BottomNavigation from "@/components/layout/bottom-navigation";
 import TopNavigation from "@/components/layout/top-navigation";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 type Job = {
   id: number;
@@ -59,12 +60,7 @@ function JobCard({ job, customer }: { job: Job, customer: Customer }) {
                 </span>
               </div>
               <div className="mt-2">
-                <span className={`status-badge 
-                  ${job.status === 'scheduled' ? 'status-scheduled' : 
-                  job.status === 'in_progress' ? 'status-in-progress' : 
-                  'status-completed'}`}>
-                  {job.status.replace('_', ' ')}
-                </span>
+                <StatusBadge jobId={job.id} status={job.status} size="sm" />
               </div>
             </div>
             <ChevronRight className="text-muted-foreground" />
