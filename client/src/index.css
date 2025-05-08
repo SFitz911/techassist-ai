@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Color scheme based on dark theme for a technician app */
+  --background: 220 25% 10%;
+  --foreground: 210 40% 98%;
+  
+  --muted: 215 25% 18%;
+  --muted-foreground: 210 40% 80%;
+  
+  --popover: 220 25% 8%;
+  --popover-foreground: 210 40% 98%;
+  
+  --card: 220 25% 12%;
+  --card-foreground: 210 40% 98%;
+  
+  --border: 220 25% 20%;
+  --input: 215 25% 18%;
+  
+  --primary: 207 90% 54%;
+  --primary-foreground: 210 40% 98%;
+  
+  --secondary: 215 25% 25%;
+  --secondary-foreground: 210 40% 98%;
+  
+  --accent: 207 90% 30%;
+  --accent-foreground: 210 40% 98%;
+  
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --ring: 215 25% 25%;
+  
+  /* Status colors */
+  --success: 142 76% 36%;
+  --warning: 38 95% 55%;
+  --info: 207 90% 54%;
+  
+  /* Charts colors */
+  --chart-1: 207 90% 54%;
+  --chart-2: 142 76% 36%;
+  --chart-3: 38 95% 55%;
+  --chart-4: 0 62.8% 50.6%;
+  --chart-5: 270 75% 60%;
+  
+  /* Sidebar specific */
+  --sidebar-background: 220 25% 8%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 207 90% 54%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 215 25% 25%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 220 25% 20%;
+  --sidebar-ring: 215 25% 25%;
+  
+  --radius: 0.5rem;
+}
+
+.light {
+  /* Only used for any potential light theme toggle in the future */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  
+  --primary: 207 90% 54%;
+  --primary-foreground: 210 40% 98%;
+  
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  
+  --accent: 210 40% 90%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --ring: 215 20.2% 65.1%;
+  
+  /* Status colors */
+  --success: 142 76% 36%;
+  --warning: 38 95% 55%;
+  --info: 207 90% 54%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html, body {
+    @apply h-full overflow-hidden bg-background text-foreground;
+  }
+  
+  #root {
+    @apply h-full overflow-hidden;
+  }
+  
+  .page-container {
+    @apply h-full flex flex-col overflow-hidden;
+  }
+  
+  .job-header {
+    @apply bg-secondary p-3 border-b;
+  }
+  
+  .content-area {
+    @apply flex-1 overflow-y-auto;
+  }
+  
+  .navigation-bar {
+    @apply bg-card border-t border-border flex justify-around py-3 items-center;
+  }
+  
+  .tab-button {
+    @apply flex flex-col items-center text-muted-foreground text-xs gap-1 transition-colors;
+  }
+  
+  .tab-button.active {
+    @apply text-primary;
+  }
+  
+  .tab-button-icon {
+    @apply w-5 h-5;
+  }
+  
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  
+  .status-scheduled {
+    @apply bg-muted text-muted-foreground;
+  }
+  
+  .status-in-progress {
+    @apply bg-primary/20 text-primary;
+  }
+  
+  .status-completed {
+    @apply bg-green-500/20 text-green-500;
+  }
+}
