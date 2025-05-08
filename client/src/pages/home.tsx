@@ -113,7 +113,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="page-container pb-20">
+    <div className="page-container pb-20 overflow-y-auto">
       <TopNavigation />
       
       <div className="px-4 py-6 md:py-10">

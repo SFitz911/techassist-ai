@@ -101,15 +101,15 @@
   }
   
   html, body {
-    @apply h-full overflow-hidden bg-background text-foreground;
+    @apply h-full bg-background text-foreground;
   }
   
   #root {
-    @apply h-full overflow-hidden;
+    @apply h-full;
   }
   
   .page-container {
-    @apply h-full flex flex-col overflow-hidden;
+    @apply h-full flex flex-col overflow-y-auto;
   }
   
   .job-header {
