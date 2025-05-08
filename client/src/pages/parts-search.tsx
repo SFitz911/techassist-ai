@@ -19,7 +19,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { identifyPartsFromJobImages, searchPartsByImage } from '@/lib/openai';
 import { useToast } from '@/hooks/use-toast';
 import { useMapboxToken } from '@/hooks/use-mapbox-token';
-import StoreLocationMap from '@/components/map/store-location-map';
+import IframeStoreMap from '@/components/map/iframe-store-map';
 import TopNavigation from '@/components/layout/top-navigation';
 import BottomNavigation from '@/components/layout/bottom-navigation';
 import { Button } from '@/components/ui/button';
