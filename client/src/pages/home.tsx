@@ -180,6 +180,40 @@ export default function Home() {
                   </Link>
                 </Button>
               </div>
+              
+              {/* Job Card Navigation Buttons */}
+              <div className="mt-4 grid grid-cols-5 gap-1 border-t pt-4 w-full">
+                <Link href="/jobs/1?tab=details" className="block">
+                  <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                    <File className="h-5 w-5 mb-1 text-yellow-500" />
+                    <span className="text-[10px] whitespace-nowrap">Details</span>
+                  </button>
+                </Link>
+                <Link href="/jobs/1?tab=photos" className="block">
+                  <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                    <Camera className="h-5 w-5 mb-1 text-yellow-500" />
+                    <span className="text-[10px] whitespace-nowrap">Photos</span>
+                  </button>
+                </Link>
+                <Link href="/jobs/1?tab=notes" className="block">
+                  <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                    <FileText className="h-5 w-5 mb-1 text-yellow-500" />
+                    <span className="text-[10px] whitespace-nowrap">Notes</span>
+                  </button>
+                </Link>
+                <Link href="/jobs/1?tab=estimates" className="block">
+                  <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                    <Calculator className="h-5 w-5 mb-1 text-yellow-500" />
+                    <span className="text-[10px] whitespace-nowrap">Estimates</span>
+                  </button>
+                </Link>
+                <Link href="/jobs/1?tab=invoice" className="block">
+                  <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                    <Receipt className="h-5 w-5 mb-1 text-yellow-500" />
+                    <span className="text-[10px] whitespace-nowrap">Invoice</span>
+                  </button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -251,35 +285,35 @@ export default function Home() {
                       </div>
                       
                       {/* Job Card Navigation Buttons */}
-                      <div className="mt-4 grid grid-cols-5 gap-1 border-t pt-4">
-                        <Link href={`/jobs/${job.id}?tab=details`}>
-                          <button className="flex flex-col items-center w-full text-xs py-1">
-                            <File className="h-4 w-4 mb-1 text-yellow-500" />
-                            <span className="text-[10px]">Details</span>
+                      <div className="mt-4 grid grid-cols-5 gap-1 border-t pt-4 w-full">
+                        <Link href={`/jobs/${job.id}?tab=details`} className="block">
+                          <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                            <File className="h-5 w-5 mb-1 text-yellow-500" />
+                            <span className="text-[10px] whitespace-nowrap">Details</span>
                           </button>
                         </Link>
-                        <Link href={`/jobs/${job.id}?tab=photos`}>
-                          <button className="flex flex-col items-center w-full text-xs py-1">
-                            <Camera className="h-4 w-4 mb-1 text-yellow-500" />
-                            <span className="text-[10px]">Photos</span>
+                        <Link href={`/jobs/${job.id}?tab=photos`} className="block">
+                          <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                            <Camera className="h-5 w-5 mb-1 text-yellow-500" />
+                            <span className="text-[10px] whitespace-nowrap">Photos</span>
                           </button>
                         </Link>
-                        <Link href={`/jobs/${job.id}?tab=notes`}>
-                          <button className="flex flex-col items-center w-full text-xs py-1">
-                            <FileText className="h-4 w-4 mb-1 text-yellow-500" />
-                            <span className="text-[10px]">Notes</span>
+                        <Link href={`/jobs/${job.id}?tab=notes`} className="block">
+                          <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                            <FileText className="h-5 w-5 mb-1 text-yellow-500" />
+                            <span className="text-[10px] whitespace-nowrap">Notes</span>
                           </button>
                         </Link>
-                        <Link href={`/jobs/${job.id}?tab=estimates`}>
-                          <button className="flex flex-col items-center w-full text-xs py-1">
-                            <Calculator className="h-4 w-4 mb-1 text-yellow-500" />
-                            <span className="text-[10px]">Estimates</span>
+                        <Link href={`/jobs/${job.id}?tab=estimates`} className="block">
+                          <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                            <Calculator className="h-5 w-5 mb-1 text-yellow-500" />
+                            <span className="text-[10px] whitespace-nowrap">Estimates</span>
                           </button>
                         </Link>
-                        <Link href={`/jobs/${job.id}?tab=invoice`}>
-                          <button className="flex flex-col items-center w-full text-xs py-1">
-                            <Receipt className="h-4 w-4 mb-1 text-yellow-500" />
-                            <span className="text-[10px]">Invoice</span>
+                        <Link href={`/jobs/${job.id}?tab=invoice`} className="block">
+                          <button className="flex flex-col items-center w-full text-xs py-1 border border-transparent hover:border-yellow-500/20 hover:bg-yellow-500/5 rounded transition-colors">
+                            <Receipt className="h-5 w-5 mb-1 text-yellow-500" />
+                            <span className="text-[10px] whitespace-nowrap">Invoice</span>
                           </button>
                         </Link>
                       </div>
