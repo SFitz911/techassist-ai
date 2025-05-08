@@ -508,9 +508,10 @@ export default function PartsSearchPage() {
                     {/* Add store location map */}
                     {store.latitude && store.longitude && (
                       <div className="mb-4 border border-border rounded-md overflow-hidden">
-                        <StoreLocationMap 
+                        <IframeStoreMap 
                           stores={[store]} 
                           selectedPartName={store.parts && store.parts[0] ? store.parts[0].name : 'Parts'}
+                          height="250px"
                         />
                       </div>
                     )}
