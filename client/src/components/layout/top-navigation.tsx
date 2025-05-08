@@ -1,184 +1,100 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
-import { cn } from "@/lib/utils";
-import { Home, Map, User, Settings, Menu, X, LogOut } from "lucide-react";
+import { useState } from 'react';
+import { Link, useLocation } from 'wouter';
+import { 
+  Menu, X, Home, Map, Camera, FileText, 
+  Receipt, Settings, User, HardHat, Search
+} from 'lucide-react';
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-interface TopNavigationProps {
-  userName?: string;
-  userAvatar?: string;
-}
-
-export default function TopNavigation({ userName = "Technician", userAvatar }: TopNavigationProps) {
-  const [location, setLocation] = useLocation();
-  const [isMobile, setIsMobile] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Check if mobile
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-    
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
+export default function TopNavigation() {
+  const [location, navigate] = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  const navItems = [
-    { path: "/", label: "Home", icon: Home },
-    { path: "/map", label: "Job Map", icon: Map },
-    { path: "/profile", label: "Profile", icon: User },
-    { path: "/settings", label: "Settings", icon: Settings },
+  const closeMenu = () => setIsMenuOpen(false);
+  
+  const menuItems = [
+    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/map', icon: Map, label: 'Job Map' },
+    { path: '/photos', icon: Camera, label: 'Photos' },
+    { path: '/notes', icon: FileText, label: 'Notes' },
+    { path: '/invoice', icon: Receipt, label: 'Invoices' },
+    { path: '/parts-search', icon: Search, label: 'Parts Search' },
   ];
-
+  
   const isActive = (path: string) => {
     return location === path;
   };
   
-  const renderNavItems = () => {
-    return navItems.map((item) => {
-      const Icon = item.icon;
-      
-      // Give each nav item a unique color
-      const getIconColor = (path: string) => {
-        switch(path) {
-          case "/":
-            return "text-amber-500";
-          case "/map":
-            return "text-emerald-500";
-          case "/profile":
-            return "text-blue-500";
-          case "/settings":
-            return "text-purple-500";
-          default:
-            return "text-muted-foreground";
-        }
-      };
-      
-      return (
-        <Link key={item.path} href={item.path}>
-          <Button
-            variant={isActive(item.path) ? "default" : "ghost"}
-            size="sm"
-            className={cn(
-              "flex items-center gap-2",
-              isActive(item.path) 
-                ? "bg-primary text-primary-foreground" 
-                : "hover:bg-accent hover:text-primary"
-            )}
-            onClick={() => setIsOpen(false)}
-          >
-            <Icon className={cn("h-4 w-4", getIconColor(item.path))} />
-            <span>{item.label}</span>
-          </Button>
-        </Link>
-      );
-    });
-  };
-
   return (
-    <div className="border-b bg-background sticky top-0 z-10">
-      <div className="flex h-14 items-center px-4 md:px-6">
-        <div className="flex mr-4">
-          <Link href="/">
-            <span className="font-bold text-xl cursor-pointer">TechPro</span>
-          </Link>
-        </div>
-        
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-2">
-          {renderNavItems()}
-        </div>
-        
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          {/* Mobile Menu Trigger */}
-          {isMobile && (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button size="icon" variant="outline">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle menu</span>
+    <div className="top-navigation">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-4 md:px-6 shadow-sm">
+        <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="sm:max-w-xs flex flex-col">
+            <SheetHeader className="px-1">
+              <SheetTitle className="flex items-center">
+                <HardHat className="w-5 h-5 mr-2 text-yellow-500" />
+                TechPro App
+              </SheetTitle>
+            </SheetHeader>
+            <div className="flex flex-col gap-2 py-4">
+              {menuItems.map((item) => (
+                <Link key={item.path} href={item.path} onClick={closeMenu}>
+                  <Button
+                    variant={isActive(item.path) ? "default" : "ghost"}
+                    className={`w-full justify-start ${
+                      isActive(item.path) 
+                        ? "bg-green-500 hover:bg-green-600 text-white"
+                        : "hover:bg-secondary"
+                    }`}
+                  >
+                    <item.icon className="mr-2 h-5 w-5" />
+                    {item.label}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-auto">
+              <div className="border-t pt-4">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                >
+                  <Settings className="mr-2 h-5 w-5" />
+                  Settings
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="max-w-[280px] sm:max-w-[320px]">
-                <div className="px-2 py-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <Link href="/">
-                      <span className="font-bold text-xl cursor-pointer">TechPro</span>
-                    </Link>
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <X className="h-5 w-5" />
-                      <span className="sr-only">Close</span>
-                    </Button>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    {renderNavItems()}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          )}
-          
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar>
-                  <AvatarImage src={userAvatar} />
-                  <AvatarFallback>
-                    {userName.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/profile">
-                  <div className="flex w-full items-center">
-                    <User className="mr-2 h-4 w-4 text-blue-500" />
-                    <span>Profile</span>
-                  </div>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  <div className="flex w-full items-center">
-                    <Settings className="mr-2 h-4 w-4 text-purple-500" />
-                    <span>Settings</span>
-                  </div>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4 text-rose-500" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <HardHat className="h-6 w-6 text-yellow-500" />
+            <span className="font-semibold hidden md:inline-flex">
+              TechPro App
+            </span>
+          </div>
+        </Link>
+        <div className="ml-auto flex items-center gap-2">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src="" alt="User" />
+            <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+          </Avatar>
         </div>
-      </div>
+      </header>
     </div>
   );
 }

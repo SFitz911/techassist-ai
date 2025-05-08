@@ -9,6 +9,7 @@ import PhotosTab from "@/components/tabs/photos-tab";
 import NotesTab from "@/components/tabs/notes-tab";
 import EstimatesTab from "@/components/tabs/estimates-tab";
 import InvoiceTab from "@/components/tabs/invoice-tab";
+import BottomNavigation from "@/components/layout/bottom-navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
@@ -99,6 +100,9 @@ export default function JobDetails() {
         
         <NavigationBar activeTab={activeTab} onChange={setActiveTab} />
       </Tabs>
+      
+      {/* Bottom Navigation */}
+      <BottomNavigation />
     </div>
   );
 }
