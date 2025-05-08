@@ -28,7 +28,7 @@ export default function JobHeader({ job, customer }: JobHeaderProps) {
           className="h-8 w-8 mr-1 -ml-2"
           onClick={() => setLocation("/")}
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-5 w-5 text-blue-500" />
         </Button>
         <div>
           <div className="flex items-center">
@@ -41,10 +41,10 @@ export default function JobHeader({ job, customer }: JobHeaderProps) {
             </span>
           </div>
           <div className="flex items-center text-xs text-muted-foreground mt-1">
-            <span className="mr-2">WO# {job.workOrderNumber}</span>
+            <span className="mr-2 font-medium text-yellow-500">WO# {job.workOrderNumber}</span>
             {customer.address && (
               <div className="flex items-center">
-                <MapPin className="h-3 w-3 mr-1" />
+                <MapPin className="h-3 w-3 mr-1 text-red-500" />
                 <span>
                   {customer.city}, {customer.state}
                 </span>

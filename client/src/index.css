@@ -141,18 +141,18 @@
   }
   
   .status-badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border;
   }
   
   .status-scheduled {
-    @apply bg-muted text-muted-foreground;
+    @apply bg-yellow-900/30 text-yellow-500 border-yellow-500/50;
   }
   
   .status-in-progress {
-    @apply bg-primary/20 text-primary;
+    @apply bg-blue-900/30 text-blue-500 border-blue-500/50;
   }
   
   .status-completed {
-    @apply bg-green-500/20 text-green-500;
+    @apply bg-green-900/30 text-green-500 border-green-500/50;
   }
 }
