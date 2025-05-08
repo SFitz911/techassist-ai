@@ -4,7 +4,8 @@ import {
   MapPin, FileText, ChevronRight, 
   Wrench, Clock, Briefcase, PackageSearch,
   PanelBottom, Cpu, Workflow, Loader2,
-  File, Camera, Calculator, Receipt
+  File, Camera, Calculator, Receipt,
+  Phone, Mail
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -177,11 +178,29 @@ export default function Home() {
                     <h3 className="font-semibold text-base mb-1">
                       {customers?.find(c => c.id === jobs[0].customerId)?.name || 'Customer'}
                     </h3>
-                    <p className="text-sm mb-2">
+                    <p className="text-sm mb-1">
                       {customers?.find(c => c.id === jobs[0].customerId)?.address}, {' '}
                       {customers?.find(c => c.id === jobs[0].customerId)?.city}, {' '}
                       {customers?.find(c => c.id === jobs[0].customerId)?.state}
                     </p>
+                    <div className="flex items-center gap-2 text-xs mb-1.5">
+                      <Phone className="h-3 w-3 text-green-500" />
+                      <a 
+                        href={`tel:${customers?.find(c => c.id === jobs[0].customerId)?.phone}`} 
+                        className="text-green-500 hover:underline"
+                      >
+                        {customers?.find(c => c.id === jobs[0].customerId)?.phone}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs mb-2">
+                      <Mail className="h-3 w-3 text-blue-500" />
+                      <a 
+                        href={`mailto:${customers?.find(c => c.id === jobs[0].customerId)?.email}`} 
+                        className="text-blue-500 hover:underline"
+                      >
+                        {customers?.find(c => c.id === jobs[0].customerId)?.email}
+                      </a>
+                    </div>
                     <div className="flex items-center">
                       <StatusBadge jobId={jobs[0].id} status={jobs[0].status} size="sm" />
                     </div>
@@ -286,9 +305,21 @@ export default function Home() {
                             Work Order #<span className="text-yellow-500 font-bold">{job.workOrderNumber}</span>
                           </div>
                           <h3 className="font-semibold text-base mb-1">{customer?.name}</h3>
-                          <p className="text-sm mb-2">
+                          <p className="text-sm mb-1">
                             {customer?.address}, {customer?.city}, {customer?.state}
                           </p>
+                          <div className="flex items-center gap-2 text-xs mb-1.5">
+                            <Phone className="h-3 w-3 text-green-500" />
+                            <a href={`tel:${customer?.phone}`} className="text-green-500 hover:underline">
+                              {customer?.phone}
+                            </a>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs mb-2">
+                            <Mail className="h-3 w-3 text-blue-500" />
+                            <a href={`mailto:${customer?.email}`} className="text-blue-500 hover:underline">
+                              {customer?.email}
+                            </a>
+                          </div>
                           <div className="flex items-center">
                             <StatusBadge jobId={job.id} status={job.status} size="sm" />
                           </div>
