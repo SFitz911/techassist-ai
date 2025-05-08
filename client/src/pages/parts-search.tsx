@@ -102,6 +102,9 @@ export default function PartsSearchPage() {
   
   // Compute derived values
   const searchResults = searchType === 'text' ? textSearchResults : imageSearchResults?.stores;
+  const aiGeneratedDescription = 
+    searchType === 'image' && imageSearchResults?.query ? 
+    `AI identified: "${imageSearchResults.query}"` : null;
   const isLoading = 
     (searchType === 'text' && isLoadingTextSearch) || 
     (searchType === 'image' && isLoadingImageSearch) ||
@@ -273,6 +276,11 @@ export default function PartsSearchPage() {
             <CardDescription>
               Find parts at local hardware stores and add them to a job estimate
             </CardDescription>
+            {aiGeneratedDescription && (
+              <Badge variant="outline" className="mt-2 text-blue-400 border-blue-400">
+                {aiGeneratedDescription}
+              </Badge>
+            )}
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -294,22 +302,144 @@ export default function PartsSearchPage() {
                 </Select>
               </div>
               
-              <form onSubmit={handleSearch} className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="text"
-                    placeholder="Search for parts (e.g., copper pipe, sink faucet)..."
-                    className="pl-8"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Button type="submit" disabled={!searchQuery.trim() || isLoading}>
-                  {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
-                  Search
-                </Button>
-              </form>
+              <Tabs defaultValue="text" className="w-full">
+                <TabsList className="grid grid-cols-3 mb-4">
+                  <TabsTrigger value="text">Text Search</TabsTrigger>
+                  <TabsTrigger value="camera">Camera</TabsTrigger>
+                  <TabsTrigger value="job">From Job</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="text" className="mt-0">
+                  <form onSubmit={handleTextSearch} className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input
+                        type="text"
+                        placeholder="Search for parts (e.g., copper pipe, sink faucet)..."
+                        className="pl-8"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <Button type="submit" disabled={!searchQuery.trim() || isLoading}>
+                      {isLoadingTextSearch ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
+                      Search
+                    </Button>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="camera" className="mt-0">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button 
+                        onClick={captureImage} 
+                        className="flex-1 h-20" 
+                        disabled={isLoading}
+                        variant="outline"
+                      >
+                        <div className="flex flex-col items-center">
+                          <Camera className="h-6 w-6 mb-2" />
+                          <span>Take Photo</span>
+                        </div>
+                      </Button>
+                      
+                      <Button 
+                        onClick={() => fileInputRef.current?.click()} 
+                        className="flex-1 h-20" 
+                        disabled={isLoading}
+                        variant="outline"
+                      >
+                        <div className="flex flex-col items-center">
+                          <FileImage className="h-6 w-6 mb-2" />
+                          <span>Upload Image</span>
+                        </div>
+                      </Button>
+                      <input 
+                        ref={fileInputRef}
+                        type="file" 
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </div>
+                    
+                    {imageData && (
+                      <div className="w-full flex justify-center border border-border rounded-md p-2">
+                        <img 
+                          src={imageData} 
+                          alt="Uploaded part" 
+                          className="max-h-48 object-contain"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="job" className="mt-0">
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Use AI to analyze the most recent photo from the selected job and find matching parts.
+                    </p>
+                    
+                    <Button 
+                      onClick={handleIdentifyFromJobPhotos} 
+                      className="w-full"
+                      disabled={!jobId || isLoadingJobImageAnalysis}
+                    >
+                      {isLoadingJobImageAnalysis ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Search className="h-4 w-4 mr-2" />
+                      )}
+                      Analyze Job Photos
+                    </Button>
+                    
+                    {jobImageAnalysisResults && (
+                      <Card className="mt-4 border-blue-500">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="flex items-center gap-2">
+                            <Sparkles className="h-5 w-5 text-blue-400" />
+                            AI Analysis Results
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div>
+                              <span className="font-semibold">Part Type:</span> {jobImageAnalysisResults.partIdentified.partType}
+                            </div>
+                            <div>
+                              <span className="font-semibold">Description:</span> {jobImageAnalysisResults.partIdentified.description}
+                            </div>
+                            <div>
+                              <span className="font-semibold">Estimated Cost:</span> {formatPrice(jobImageAnalysisResults.partIdentified.estimatedReplacementCost)}
+                            </div>
+                            <div>
+                              <span className="font-semibold">Possible Issues:</span>
+                              <ul className="list-disc list-inside ml-2 mt-1">
+                                {jobImageAnalysisResults.partIdentified.possibleIssues.map((issue: string, i: number) => (
+                                  <li key={i}>{issue}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <Button 
+                              onClick={() => {
+                                setSearchQuery(jobImageAnalysisResults.partIdentified.partType);
+                                setSearchType('text');
+                                setTimeout(() => refetchTextSearch(), 100);
+                              }}
+                              variant="outline"
+                              className="w-full mt-2 border-blue-400 text-blue-400 hover:bg-blue-400/10"
+                            >
+                              <Search className="h-4 w-4 mr-2" />
+                              Search for this part
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           </CardContent>
         </Card>
@@ -378,6 +508,7 @@ export default function PartsSearchPage() {
                               </div>
                               <div>
                                 <p className="font-medium">{part.name}</p>
+                                <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
                                 <div className="flex items-center gap-2 mt-1">
                                   <span className="text-sm font-medium text-primary">
                                     {formatPrice(part.price)}
