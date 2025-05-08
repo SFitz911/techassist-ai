@@ -228,9 +228,9 @@ export default function JobMap({ jobs, customers }: JobMapProps) {
         </Map>
       </div>
       
-      {/* Add a legend for job status colors that stacks on mobile */}
-      <div className="p-4 border-t bg-background">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      {/* Add a legend for job status colors that's always vertical */}
+      <div className="p-3 border-t bg-background">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded-full bg-yellow-500 border border-yellow-300"></div>
             <span className="text-xs">Scheduled</span>
