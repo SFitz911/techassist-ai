@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, PasteClipboard, Wand } from 'lucide-react';
+import { Plus, Clipboard, Wand } from 'lucide-react';
 import { InsertJob, Customer } from '@shared/schema';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -208,7 +208,7 @@ export default function AddJobForm({ customers, technicianId }: AddJobFormProps)
                 </>
               ) : (
                 <>
-                  <PasteClipboard className="h-4 w-4 mr-2" />
+                  <Clipboard className="h-4 w-4 mr-2" />
                   Extract Job Information
                 </>
               )}
