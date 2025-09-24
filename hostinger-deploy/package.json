@@ -1,0 +1,31 @@
+{
+  "name": "techassist-ai-beta",
+  "version": "1.0.0-beta",
+  "description": "TechAssist AI Beta - Hostinger Deployment",
+  "main": "index-demo.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node index-demo.js",
+    "dev": "tsx index-demo.ts",
+    "build": "vite build && tsc index-demo.ts --outDir . --target es2020 --module esnext --moduleResolution bundler",
+    "postinstall": "npm run build"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.2.0"
+  },
+  "keywords": ["techassist", "ai", "beta", "hostinger"],
+  "author": "Your Name",
+  "license": "UNLICENSED"
+}

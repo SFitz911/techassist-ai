@@ -37,66 +37,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Configuration endpoints
-  /**
-   * @swagger
-   * /api/config/mapbox:
-   *   get:
-   *     summary: Get Mapbox access token
-   *     description: Retrieve the Mapbox access token for map integration
-   *     tags: [Maps]
-   *     responses:
-   *       200:
-   *         description: Mapbox token retrieved successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 token:
-   *                   type: string
-   *                   description: Mapbox access token
-   *                   example: "pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJhYmMxMjMifQ"
-   */
   app.get("/api/config/mapbox", (_req: Request, res: Response) => {
     res.json({ token: process.env.MAPBOX_ACCESS_TOKEN });
   });
 
   // Users
-  /**
-   * @swagger
-   * /api/users/{id}:
-   *   get:
-   *     summary: Get user by ID
-   *     description: Retrieve a specific user by their ID (password excluded)
-   *     tags: [Users]
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         description: User ID
-   *         schema:
-   *           type: integer
-   *           example: 1
-   *     responses:
-   *       200:
-   *         description: User retrieved successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 id:
-   *                   type: integer
-   *                   example: 1
-   *                 name:
-   *                   type: string
-   *                   example: "John Doe"
-   *                 email:
-   *                   type: string
-   *                   example: "john@example.com"
-   *       404:
-   *         $ref: '#/components/responses/NotFound'
-   */
   app.get("/api/users/:id", async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const user = await storage.getUser(id);
@@ -116,9 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password, ...userData2 } = user;
       res.status(201).json(userData2);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Registration failed'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -139,9 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password: _, ...userData } = user;
       res.json(userData);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'An unexpected error occurred'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -166,60 +107,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const customer = await storage.createCustomer(customerData);
       res.status(201).json(customer);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'An unexpected error occurred'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
   // Jobs
-  /**
-   * @swagger
-   * /api/jobs:
-   *   get:
-   *     summary: Get all jobs
-   *     description: Retrieve a list of all service jobs
-   *     tags: [Jobs]
-   *     responses:
-   *       200:
-   *         description: Jobs retrieved successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 $ref: '#/components/schemas/Job'
-   */
   app.get("/api/jobs", async (_req: Request, res: Response) => {
     const jobs = await storage.getJobs();
     res.json(jobs);
   });
 
-  /**
-   * @swagger
-   * /api/jobs/{id}:
-   *   get:
-   *     summary: Get job by ID
-   *     description: Retrieve a specific job by its ID
-   *     tags: [Jobs]
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         description: Job ID
-   *         schema:
-   *           type: integer
-   *           example: 1
-   *     responses:
-   *       200:
-   *         description: Job retrieved successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Job'
-   *       404:
-   *         $ref: '#/components/responses/NotFound'
-   */
   app.get("/api/jobs/:id", async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const job = await storage.getJob(id);
@@ -241,9 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const job = await storage.createJob(jobData);
       res.status(201).json(job);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to create job'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -260,9 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(job);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to update job status'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -279,69 +172,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const photo = await storage.createPhoto(photoData);
       res.status(201).json(photo);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to create photo'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
   // AI Image Analysis
-  /**
-   * @swagger
-   * /api/photos/{id}/analyze:
-   *   post:
-   *     summary: Analyze photo with AI
-   *     description: Use OpenAI Vision API to analyze a photo and identify technical issues, parts, and recommendations
-   *     tags: [AI Features, Photos]
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         description: Photo ID to analyze
-   *         schema:
-   *           type: integer
-   *           example: 1
-   *     responses:
-   *       200:
-   *         description: Photo analyzed successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 id:
-   *                   type: integer
-   *                   example: 1
-   *                 aiAnalysis:
-   *                   type: object
-   *                   properties:
-   *                     description:
-   *                       type: string
-   *                       example: "HVAC unit showing signs of wear and requiring maintenance"
-   *                     issues:
-   *                       type: array
-   *                       items:
-   *                         type: string
-   *                       example: ["Dirty air filter", "Compressor wear", "Loose electrical connections"]
-   *                     parts:
-   *                       type: array
-   *                       items:
-   *                         type: object
-   *                         properties:
-   *                           name:
-   *                             type: string
-   *                             example: "Air Filter"
-   *                           condition:
-   *                             type: string
-   *                             example: "Needs replacement"
-   *                           priority:
-   *                             type: string
-   *                             example: "high"
-   *       404:
-   *         $ref: '#/components/responses/NotFound'
-   *       400:
-   *         $ref: '#/components/responses/BadRequest'
-   */
   app.post("/api/photos/:id/analyze", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
@@ -418,11 +253,7 @@ Be specific about parts needed so a technician can search for these exact items 
           max_tokens: 800,
         });
 
-        const content = visionResponse.choices[0].message.content;
-        if (!content) {
-          throw new Error('No response content from OpenAI');
-        }
-        const analysis = JSON.parse(content);
+        const analysis = JSON.parse(visionResponse.choices[0].message.content);
         const updatedPhoto = await storage.updatePhotoAnalysis(id, analysis);
 
         // Auto-create estimate items from the analysis
@@ -480,9 +311,7 @@ Be specific about parts needed so a technician can search for these exact items 
         res.json(updatedPhoto);
       }
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to analyze photo'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -499,9 +328,7 @@ Be specific about parts needed so a technician can search for these exact items 
       const note = await storage.createNote(noteData);
       res.status(201).json(note);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to create note'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -541,9 +368,6 @@ Be specific about parts needed so a technician can search for these exact items 
         });
 
         const enhancedContent = enhancementResponse.choices[0].message.content;
-        if (!enhancedContent) {
-          throw new Error('No enhanced content received from OpenAI');
-        }
         const updatedNote = await storage.updateNoteEnhancement(id, enhancedContent);
 
         res.json(updatedNote);
@@ -554,9 +378,7 @@ Be specific about parts needed so a technician can search for these exact items 
         res.json(updatedNote);
       }
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to enhance note'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -572,9 +394,7 @@ Be specific about parts needed so a technician can search for these exact items 
       const material = await storage.createMaterial(materialData);
       res.status(201).json(material);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to create material'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -591,9 +411,7 @@ Be specific about parts needed so a technician can search for these exact items 
       const item = await storage.createEstimateItem(itemData);
       res.status(201).json(item);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to create estimate item'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -615,9 +433,7 @@ Be specific about parts needed so a technician can search for these exact items 
       const estimate = await storage.createEstimate(estimateData);
       res.status(201).json(estimate);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to create estimate'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -634,9 +450,7 @@ Be specific about parts needed so a technician can search for these exact items 
       }
       res.json(estimate);
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to update estimate status'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
@@ -745,9 +559,7 @@ Be specific about parts needed so a technician can search for these exact items 
         res.json(stores);
       }
     } catch (error) {
-      res.status(400).json({
-        message: error instanceof Error ? error.message : 'Failed to search parts'
-      });
+      res.status(400).json({ message: error.message });
     }
   });
 
