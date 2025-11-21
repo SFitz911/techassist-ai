@@ -1,0 +1,9 @@
+# TechAssist AI - Python Dependencies
+# Required for hardware store scraper functionality
+
+# Web scraping and content extraction
+trafilatura>=2.0.0
+
+# Twilio (optional - for SMS/communication features)
+twilio>=9.6.0
+

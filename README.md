@@ -30,38 +30,40 @@ An AI-powered technical assistance application for job management, parts identif
 ### Prerequisites
 
 - Node.js 18+ 
-- PostgreSQL database
-- OpenAI API key
-- Mapbox access token
+- PostgreSQL database (optional - currently using in-memory storage)
+- OpenAI API key (optional - uses mock data if not provided)
+- Mapbox access token (required)
 
 ### Installation
 
+**Easiest Method**: Double-click `start-dev.bat` (Windows) or run `./start-dev.sh` (Mac/Linux)
+
+**Manual Method**:
 1. **Clone and setup**
    ```bash
-   cd TechAssistAI
+   cd techassist-ai
    npm install
    ```
 
 2. **Environment Configuration**
    ```bash
+   # The startup script creates .env automatically, or create manually:
    cp .env.example .env
-   # Edit .env with your actual API keys and database URL
+   # Edit .env with your actual API keys
    ```
 
-3. **Database Setup**
-   ```bash
-   npm run db:push
-   ```
-
-4. **Start Development Server**
+3. **Start Development Server**
    ```bash
    npm run dev
+   # Or use the startup script: start-dev.bat / start-dev.sh
    ```
 
-5. **Open Application**
+4. **Open Application**
    ```
    http://localhost:5000
    ```
+
+📚 **For detailed setup instructions, see [docs/QUICK_START.md](./docs/QUICK_START.md)**
 
 ## Environment Variables
 
@@ -146,6 +148,15 @@ Upload photos of equipment or issues to get:
 - Offline capability
 - GPS integration
 - Camera integration
+
+## Documentation
+
+All project documentation is located in the [`docs/`](./docs/) folder:
+
+- **[Quick Start Guide](./docs/QUICK_START.md)** - Get started in minutes
+- **[Dependencies Guide](./docs/DEPENDENCIES.md)** - Complete dependency information
+- **[Stack Audit](./docs/STACK_AUDIT_SUMMARY.md)** - Technology stack overview
+- **[Deployment Guide](./docs/DEPLOYMENT.md)** - Production deployment instructions
 
 ## Development
 

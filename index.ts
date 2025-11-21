@@ -85,16 +85,19 @@ app.use((req, res, next) => {
   }
 
   const port = 5000;
+  const host = process.platform === 'win32' ? 'localhost' : '0.0.0.0';
   server.listen(
     {
       port,
-      host: "0.0.0.0", // Listen on all network interfaces
-      reusePort: true,
+      host,
+      ...(process.platform !== 'win32' && { reusePort: true }),
     },
     () => {
       log(`serving on port ${port}`);
       log(`Local access: http://localhost:${port}`);
-      log(`Network access: http://10.0.0.214:${port}`);
+      if (process.platform !== 'win32') {
+        log(`Network access: http://10.0.0.214:${port}`);
+      }
     }
   );
 })();

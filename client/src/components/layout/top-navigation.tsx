@@ -84,7 +84,7 @@ export default function TopNavigation() {
             </div>
           </SheetContent>
         </Sheet>
-        <Link href="/">
+        <Link href="/home">
           <div className="flex items-center gap-2">
             <HardHat className="h-6 w-6 text-yellow-500" />
             <span className="font-semibold hidden md:inline-flex">
